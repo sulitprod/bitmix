@@ -43,7 +43,7 @@ const MainHead = ({ title, description, path = '/' }) => {
 				}
 
 				body {
-					background: ${manifest.theme_color};
+					background: $bodyBackground;
 				}
 			`}</style>
 		</>
