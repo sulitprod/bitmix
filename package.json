@@ -1,0 +1,29 @@
+{
+	"name": "bitmix",
+	"description": "A gaming platform where players can fight and win",
+	"version": "0.0.1",
+	"author": "Gleb Grinser",
+	"scripts": {
+		"dev": "next dev -p 3001",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"@svgr/webpack": "^5.5.0",
+		"autoprefixer": "^9.6.1",
+		"esm": "^3.2.25",
+		"firebase": "^7.15.5",
+		"next": "latest",
+		"nodemon": "^2.0.6",
+		"random": "^2.2.0",
+		"react": "latest",
+		"react-dom": "latest",
+		"react-toastify": "^6.0.8",
+		"styled-components": "^5.2.1"
+	},
+	"devDependencies": {
+		"babel-plugin-styled-components": "^1.12.0",
+		"node-sass": "^5.0.0",
+		"styled-jsx-plugin-sass": "^1.0.0"
+	}
+}
