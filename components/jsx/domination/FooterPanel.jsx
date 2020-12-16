@@ -19,30 +19,7 @@ const winners = [
 	},
 ];
 
-export default function FooterPanel() {
-	const Domination = {
-		players: [
-			{
-				photo_50: 'favicon.png',
-				percent: 30,
-				count: 150,
-				color: 'hsl(17, 100%, 75%)' // rndColor()
-			},
-			{
-				photo_50: 'favicon.png',
-				percent: 20,
-				count: 100,
-				color: 'hsl(152, 100%, 75%)'
-			},
-			{
-				photo_50: 'favicon.png',
-				percent: 50,
-				count: 250, 
-				color: 'hsl(67, 100%, 75%)'
-			}
-		]
-	}
-
+export default function FooterPanel({ Domination }) {
 	return (
 		<>
 			<div className="footerPanel">
@@ -60,7 +37,7 @@ export default function FooterPanel() {
 				<div className="sum">
 					<p>Общая сумма</p>
 					<p className="separator">•</p>
-					<Coins value={Domination.players.reduce((all, { count }) => all + count, 0)} />
+					<Coins value={Domination.sum} />
 				</div>
 			</div>
 			<style jsx>{`

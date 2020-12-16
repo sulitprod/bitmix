@@ -1,13 +1,15 @@
+import cn from 'classnames';
+
 import Svgs from './Svgs';
 
-export default function Icon({ src, width = 16, height }) {
+export default function Icon({ src, width = 16, height, className }) {
 	height = height || width;
 
 	const Svg = Svgs()[src];
 
 	return (
 		<>
-			<div className="icon">
+			<div className={cn('icon', className)}>
 				<Svg />
 			</div>
 			<style jsx>{`

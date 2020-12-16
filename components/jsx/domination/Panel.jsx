@@ -1,4 +1,4 @@
-import { isValidElement, useState } from 'react';
+import { useState } from 'react';
 
 import Button from '../Button';
 import Icon from '../Icon';
@@ -15,13 +15,7 @@ const BUTTONS = [
 	['Всё', (_, balance) => balance],
 ];
 
-export default function Panel() {
-	const User = {
-		photo_50: 'favicon.png',
-		name: 'Gleb',
-		balance: 300
-	}
-
+export default function Panel({ User }) {
 	const [inputValue, setInputValue] = useState('');
 
 	const onChange = ({ target }) => {
@@ -33,31 +27,22 @@ export default function Panel() {
 			<div className="panel">
 				<div className="buttons">
 					<ul>
-						{BUTTONS.map(([value, handler], key) => {
-							const props = {
-								type: 'main',
-								value,
-							};
-
-							if (isValidElement(value))
-								props.children = value;
-
-							return (
-								<li key={key}>
-									<Button
-										onClick={() => {
-											setInputValue(
-												handler(
-													Number(inputValue),
-													User.balance
-												)
-											);
-										}}
-										{...props}
-									/>
-								</li>
-							);
-						})}
+						{BUTTONS.map(([value, handler], key) => (
+							<li key={key}>
+								<Button
+									type="main"
+									value={value}
+									onClick={() => {
+										setInputValue(
+											handler(
+												Number(inputValue),
+												User.balance
+											)
+										);
+									}}
+								/>
+							</li>
+						))}
 					</ul>
 				</div>
 				<Input
@@ -80,10 +65,6 @@ export default function Panel() {
 						&:nth-last-child(1) {
 							margin-right: 0;
 						}
-					}
-
-					> .photo {
-						display: table !important;
 					}
 
 					> .buttons {
@@ -116,8 +97,8 @@ export default function Panel() {
 						line-height: 24px !important;
 					}
 
-					.button > .component {
-						padding: $pg4;
+					> .button > div {
+						padding: 0 8px;
 					}
 				}
 			`}</style>

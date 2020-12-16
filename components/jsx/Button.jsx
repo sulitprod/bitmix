@@ -1,3 +1,5 @@
+import cn from 'classnames';
+
 import Link from './Link';
 
 export default function Button({
@@ -15,7 +17,7 @@ export default function Button({
 	return (
 		<>
 			<Link href={href}>
-				<div className={`${type} button ${align} ${active ? 'active' : ''}`} onClick={onClick}>
+				<div className={cn('button', type, { active })} onClick={onClick}>
 					{left && <div className="component left">{left}</div>}
 					<div className={value ? 'value' : 'children'}>
 						{children || value}
@@ -31,6 +33,7 @@ export default function Button({
 					cursor: pointer;
 					display: block;
 					padding: ${padding}px;
+					text-align: ${align};
 					line-height: 0;
 					white-space: nowrap;
 					user-select: none;
@@ -62,11 +65,6 @@ export default function Button({
 					&.secondary {
 						background: transparent;
 					}
-				}
-			`}</style>
-			<style jsx>{`
-				.button {
-					text-align: ${align};
 				}
 			`}</style>
 		</>

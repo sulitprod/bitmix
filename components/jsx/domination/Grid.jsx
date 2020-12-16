@@ -1,4 +1,4 @@
-import { genGrid } from "../../../utils";
+import cn from 'classnames';
 
 function Bit({ color }) {
 	return (
@@ -13,36 +13,10 @@ function Bit({ color }) {
 	);
 }
 
-export default function Grid() {
-	const Domination = {
-		cells: [],
-		players: [
-			{
-				photo_50: 'favicon.png',
-				percent: 30,
-				count: 150,
-				color: 'hsl(17, 100%, 75%)' // rndColor()
-			},
-			{
-				photo_50: 'favicon.png',
-				percent: 20,
-				count: 100,
-				color: 'hsl(152, 100%, 75%)'
-			},
-			{
-				photo_50: 'favicon.png',
-				percent: 50,
-				count: 250, 
-				color: 'hsl(67, 100%, 75%)'
-			}
-		]
-	}
-
-	Domination.cells = genGrid(Domination.players, 1441)
-
+export default function Grid({ Domination }) {
 	return (
 		<>
-			<div className={`grid ${Domination.players.length ? 'stageAwait' : 'stageNo'}`}>
+			<div className={cn('grid', { stageAwait: Domination.players.length, stageNo: !Domination.players.length })}>
 				{Domination.cells.map((id, key) => {
 					const { color } = Domination.players[id];
 

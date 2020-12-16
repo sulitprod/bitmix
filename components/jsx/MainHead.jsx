@@ -44,6 +44,7 @@ const MainHead = ({ title, description, path = '/' }) => {
 
 				body {
 					background: $bodyBackground;
+					overflow-y: scroll;
 				}
 			`}</style>
 		</>

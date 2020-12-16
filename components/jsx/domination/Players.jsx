@@ -1,8 +1,8 @@
 import Photo from '../Photo';
-import { rndColor } from '../../../utils';
+import { percent } from '../../../utils';
 import Icon from '../Icon';
 
-function Player({ photo_50, percent, color }) {
+function Player({ photo_50, color, sum, count }) {
 	return (
 		<>
 			<div className="player">
@@ -16,7 +16,7 @@ function Player({ photo_50, percent, color }) {
 					> .line {
 						> div {
 							background: ${color};
-							height: ${percent}px;
+							height: ${percent(sum, count)}px;
 							width: 100%;
 						}
 					}
@@ -26,35 +26,12 @@ function Player({ photo_50, percent, color }) {
 	);
 }
 
-export default function Players() {
-	const Domination = {
-		players: [
-			// {
-			// 	photo_50: 'favicon.png',
-			// 	percent: 30,
-			// 	count: 150,
-			// 	color: 'hsl(17, 100%, 75%)' // rndColor()
-			// },
-			// {
-			// 	photo_50: 'favicon.png',
-			// 	percent: 20,
-			// 	count: 100,
-			// 	color: 'hsl(152, 100%, 75%)'
-			// },
-			// {
-			// 	photo_50: 'favicon.png',
-			// 	percent: 50,
-			// 	count: 250, 
-			// 	color: 'hsl(67, 100%, 75%)'
-			// }
-		]
-	}
-
+export default function Players({ Domination }) {
 	return (
 		<>
 			<div className="players">
 				{Domination.players.length ? Domination.players.map((player, key) => (
-					<Player key={key} {...player} />
+					<Player key={key} {...player} sum={Domination.sum} />
 				)) : 
 				<div className="giftText">
 					<Icon src="gift" width={64} />

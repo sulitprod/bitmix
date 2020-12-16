@@ -5,7 +5,7 @@ import Panel from '../components/jsx/domination/Panel';
 import Players from '../components/jsx/domination/Players';
 import FooterPanel from '../components/jsx/domination/FooterPanel';
 import Actions from '../components/jsx/domination/Actions';
-import { declText } from '../utils';
+import { declText, genGrid, rndColor } from '../utils';
 
 // import { useStore } from '../hooks';
 
@@ -14,36 +14,6 @@ import { declText } from '../utils';
 // import { session } from '../../libs';
 // import { toJSON } from '../../utils';
 
-// export default function Main({ title }) {
-// 	return (
-// 		<>
-// 			<main>
-// 				<div className="info">
-// 					<div className="title">
-// 						<p className="name">{title}</p>
-// 						<p>•</p>
-// 						<p>Игра #{Domination.id}</p>
-// 					</div>
-// 					<p>{Domination.players.length} игроков</p>
-// 				</div>
-// 				<div className="content">
-// 					<div>
-// 						<Players />
-// 					</div>
-// 					<div>
-// 						<Panel />
-// 					</div>
-// 					<div>
-// 						<Grid />
-// 					</div>
-// 					<div>
-// 						<Winners />
-// 					</div>
-// 				</div>
-// 			</main>
-// 		</>
-// 	);
-// }
 
 // export async function getServerSideProps({ query }) {
 // 	const domination = await dominations.findOne({
@@ -66,7 +36,7 @@ import { declText } from '../utils';
 // 	};
 // }
 
-export default function Main({ title, info }) {
+export default function Main({ title, info, user }) {
 	return (
 		<>
 			<main>
@@ -80,19 +50,19 @@ export default function Main({ title, info }) {
 				</div>
 				<div className="content">
 					<div className="space">
-						<Players />
+						<Players Domination={info} />
 					</div>
 					<div className="space">
-						<Panel />
+						<Panel User={user} />
 					</div>
 					<div>
-						<Grid />
+						<Grid Domination={info} />
 					</div>
 					<div>
-						<FooterPanel />
+						<FooterPanel Domination={info} />
 					</div>
 					<div className="space">
-						<Actions />
+						<Actions Domination={info} />
 					</div>
 				</div>
 			</main>
@@ -151,10 +121,56 @@ export async function getServerSideProps() {
 	const props = {
 		title: 'Доминация',
 		info: {
-			id: 1,
-			players: [0, 1, 2]
+			id: 2, 
+			newColor: rndColor(),
+			cells: [],
+			sum: 500,
+			actions: [],
+			players: [
+				{
+					photo_50: 'favicon.png',
+					name: 'Алена',
+					count: 150,
+					color: rndColor()
+				},
+				{
+					photo_50: 'favicon.png',
+					name: 'Павел',
+					count: 100,
+					color: rndColor()
+				},
+				{
+					photo_50: 'favicon.png',
+					name: 'Электротехник',
+					count: 250, 
+					color: rndColor()
+				}
+			]
 		},
+		user: {
+			photo_50: 'favicon.png',
+			name: 'Gleb',
+			balance: 300
+		}
 	};
+	props.info.cells = genGrid(props.info.players, 1441)
+	props.info.actions = [
+		{
+			...props.info.players[0],
+			count: 50,
+			packages: [1, 501]
+		}, 
+		{
+			...props.info.players[1],
+			count: 124,
+			packages: [502, 1742]
+		}, 
+		{
+			...props.info.players[0],
+			count: 100,
+			packages: [1743, 2743]
+		}
+	]
 
 	return { props }
 }
