@@ -22,8 +22,8 @@ const winners = [
 export default function FooterPanel({ Domination }) {
 	return (
 		<>
-			<div className="footerPanel">
-				<div className="winners">
+			<div className='footerPanel'>
+				<div className='winners'>
 					<ul>
 						{winners.map(({ photo_50 }, key) => (
 							<li key={key}>
@@ -31,12 +31,12 @@ export default function FooterPanel({ Domination }) {
 							</li>
 						))}
 					</ul>
-					<p className="separator">•</p>
+					<p className='separator'>•</p>
 					<p>Последние победители</p>
 				</div>
-				<div className="sum">
+				<div className='sum'>
 					<p>Общая сумма</p>
-					<p className="separator">•</p>
+					<p className='separator'>•</p>
 					<Coins value={Domination.sum} />
 				</div>
 			</div>

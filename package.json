@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"author": "Gleb Grinser",
 	"scripts": {
-		"dev": "next dev -p 3001",
+		"dev": "next dev",
 		"build": "next build",
 		"start": "next start"
 	},

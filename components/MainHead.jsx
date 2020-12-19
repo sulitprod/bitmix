@@ -1,7 +1,7 @@
-import Head from 'next/head'
+import Head from 'next/head';
 
-import manifest from '../../public/manifest.json'
-import { config } from '../../config'
+import manifest from '../public/manifest.json';
+import { config } from '../config';
 
 const MainHead = ({ title, description, path = '/' }) => {
 	const pageTitle = title || config.appName
@@ -9,7 +9,7 @@ const MainHead = ({ title, description, path = '/' }) => {
 	const iconUrl = '/img/favicon.png'
 
 	return (
-		<>
+		<> 
 			<Head>
 				<title>{pageTitle}</title>
 				<meta name='description' content={pageDescription} />
@@ -20,34 +20,14 @@ const MainHead = ({ title, description, path = '/' }) => {
 				<link rel='manifest' href='/manifest.json' />
 				<link rel='shortcut icon' type='image/x-icon' href={iconUrl} />
 			</Head>
-			<style jsx global>{`
-				@import url('https://fonts.googleapis.com/css?family=Montserrat');
-				@import 'public/variables.scss';
-
+			<style jsx>{`
 				@font-face {
-					font-family: "Pixel";
+					font-family: 'Pixel';
 					src: url('/pixel.otf');
-				}
-
-				* {
-					border: 0;
-					box-sizing: border-box;
-					font-family: Pixel, serif;
-					font-size: 14px;
-					list-style: none;
-					margin: 0;
-					outline: 0;
-					padding: 0;
-					position: relative;
-					text-decoration: none;
-				}
-
-				body {
-					background: $bodyBackground;
-					overflow-y: scroll;
+					font-display: fallback;
 				}
 			`}</style>
 		</>
 	)
 }
-export default MainHead
+export default MainHead;

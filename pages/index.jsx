@@ -1,121 +1,72 @@
-// import { useObserver } from 'mobx-react-lite';
+import styled from 'styled-components';
 
-import Grid from '../components/jsx/domination/Grid';
-import Panel from '../components/jsx/domination/Panel';
-import Players from '../components/jsx/domination/Players';
-import FooterPanel from '../components/jsx/domination/FooterPanel';
-import Actions from '../components/jsx/domination/Actions';
+import Grid from '../components/domination/Grid';
+import Panel from '../components/domination/Panel';
+import Players from '../components/domination/Players';
+import FooterPanel from '../components/domination/FooterPanel';
+import Actions from '../components/domination/Actions';
+
 import { declText, genGrid, rndColor } from '../utils';
 
-// import { useStore } from '../hooks';
+const Info = styled.div`
+	margin-top: 32px;
+	padding: ${({theme}) => theme.pg4};
+	text-align: center;
 
-// import { dominations } from '../../server/models';
+	> .title {
+		display: flex;
+		justify-content: center;
 
-// import { session } from '../../libs';
-// import { toJSON } from '../../utils';
+		> .name {
+			font-weight: 600;
+		}
 
+		> p {
+			font-size: 20px;
+			padding: ${({theme}) => theme.pg4};
+		}
+	}
 
-// export async function getServerSideProps({ query }) {
-// 	const domination = await dominations.findOne({
-// 		status: 0,
-// 	});
+	> div {
+		text-align: center;
+		color: ${({theme}) => theme.white};
+		padding: ${({theme}) => theme.pg4};
+	}
+`;
 
-// 	const props = {
-// 		title: 'Доминация',
-// 		domination: toJSON(domination),
-// 	};
+const Content = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 
-// 	const user = await session(query);
+	> div {
+		margin-bottom: 16px;
+	}
+` 
 
-// 	if (user) {
-// 		props.user = user;
-// 	}
-
-// 	return {
-// 		props,
-// 	};
-// }
-
-export default function Main({ title, info, user }) {
+const Main = ({ title, info, user }) => {
 	return (
-		<>
-			<main>
-				<div className="info">
-					<div className="title">
-						<p className="name">{title}</p>
-						<p>•</p>
-						<p>Игра #{info.id}</p>
-					</div>
-					<div className="playersCount">{`${info.players.length} ${declText(info.players.length, 'участников', 'участник', 'участника')}`}</div>
+		<main>
+			<Info>
+				<div className="title">
+					<p className="name">{title}</p>
+					<p>•</p>
+					<p>Игра #{info.id}</p>
 				</div>
-				<div className="content">
-					<div className="space">
-						<Players Domination={info} />
-					</div>
-					<div className="space">
-						<Panel User={user} />
-					</div>
-					<div>
-						<Grid Domination={info} />
-					</div>
-					<div>
-						<FooterPanel Domination={info} />
-					</div>
-					<div className="space">
-						<Actions Domination={info} />
-					</div>
-				</div>
-			</main>
-			<style jsx>{`
-				@import 'public/variables.scss';
-
-				main {
-					padding: $pg8;
-
-					.info {
-						margin-top: 32px;
-						padding: $pg4;
-						text-align: center;
-
-						> .title {
-							display: flex;
-							justify-content: center;
-
-							> .name {
-								font-weight: 600;
-							}
-
-							> p {
-								font-size: 20px;
-								padding: $pg4;
-							}
-						}
-
-						> div {
-							text-align: center;
-							color: $white;
-							padding: $pg4;
-						}
-					}
-
-					.content {
-						padding: $pg4;
-
-						> div {
-							display: flex;
-							justify-content: center;
-							padding: $pg4;
-
-							&.space {
-								margin-top: 32px;
-							}
-						}
-					}
-				}
-			`}</style>
-		</>
-	)
+				<div>{`${info.players.length} ${declText(info.players.length, 'участников', 'участник', 'участника')}`}</div>
+			</Info>
+			<Content>
+				<Players Domination={info} />
+				<Panel User={user} />
+				<Grid Domination={info} />
+				<FooterPanel Domination={info} />
+				<Actions Domination={info} />
+			</Content>
+		</main>
+	);
 }
+
+export default Main;
 
 export async function getServerSideProps() {
 	const props = {
