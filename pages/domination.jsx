@@ -1,15 +1,15 @@
-import styled from 'styled-components';
-
 import Grid from '../components/domination/Grid';
 import Panel from '../components/domination/Panel';
 import Players from '../components/domination/Players';
 import FooterPanel from '../components/domination/FooterPanel';
 import Actions from '../components/domination/Actions';
 import { Info, Content } from '../components/Styled';
-
 import { declText, genGrid, rndColor } from '../utils';
+import { useState } from 'react';
 
 const Domination = ({ title, info, user }) => {
+	const [userBits, updateUserBits] = useState(0);
+
 	return (
 		<main>
 			<Info>
@@ -21,8 +21,8 @@ const Domination = ({ title, info, user }) => {
 				<div>{`${info.players.length} ${declText(info.players.length, 'участников', 'участник', 'участника')}`}</div>
 			</Info>
 			<Content>
-				<Players Domination={info} />
-				<Panel User={user} />
+				<Players User={user} Domination={info} userBits={userBits} />
+				<Panel User={user} updateUserBits={updateUserBits} />
 				<Grid Domination={info} />
 				<FooterPanel Domination={info} />
 				<Actions Domination={info} />
@@ -44,18 +44,21 @@ export async function getServerSideProps() {
 			actions: [],
 			players: [
 				{
+					id: 0,
 					photo_50: 'favicon.png',
 					name: 'Алена',
 					count: 150,
 					color: rndColor()
 				},
 				{
+					id: 1,
 					photo_50: 'favicon.png',
 					name: 'Павел',
 					count: 100,
 					color: rndColor()
 				},
 				{
+					id: 2,
 					photo_50: 'favicon.png',
 					name: 'Электротехник',
 					count: 250, 
@@ -64,6 +67,7 @@ export async function getServerSideProps() {
 			]
 		},
 		user: {
+			id: 3,
 			photo_50: 'favicon.png',
 			name: 'Gleb',
 			balance: 300

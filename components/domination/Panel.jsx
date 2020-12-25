@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { createRef, useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '../default/Button';
@@ -36,9 +36,22 @@ const StyledButton = styled(Button)`
 	}
 `;
 
-const Panel = ({ User }) => {
+const Panel = ({ User, updateUserBits }) => {
 	const [inputValue, setInputValue] = useState('');
-	const onChange = ({ target }) => setInputValue(target.value);
+	const input = createRef();
+	const onChange = ({ target }) => {
+		setInputValue(target.value);
+		updateUserBits(Number(target.value));
+	}
+	const onClick = (handler) => {
+		const newValue = handler(
+			Number(inputValue),
+			User.balance
+		);
+
+		setInputValue(newValue);
+		updateUserBits(newValue);
+	}
 
 	return (
 		<Styled>
@@ -47,18 +60,12 @@ const Panel = ({ User }) => {
 					key={key}
 					type='main'
 					value={value}
-					onClick={() => {
-						setInputValue(
-							handler(
-								Number(inputValue),
-								User.balance
-							)
-						)
-					}}
+					onClick={() => onClick(handler)}
 				/>
 			))}
 			<StyledInput
 				placeholder='Количество'
+				ref={input}
 				value={inputValue}
 				onChange={onChange}
 			/>

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Coins from './Coins';
+import Bits from './Bits';
 import Button from './default/Button';
 import Photo from './default/Photo';
 
@@ -9,7 +9,7 @@ const Name = styled.p`
 	line-height: 16px;
 	padding-bottom: ${({theme}) => theme.pg4};
 `;
-const Styled = styled(Coins)`
+const Styled = styled(Bits)`
 	padding-top: ${({theme}) => theme.pg4} !important;
 `;
 

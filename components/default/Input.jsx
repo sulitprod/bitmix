@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import styled from 'styled-components';
 
 const Styled = styled.div`
@@ -22,19 +23,19 @@ const Styled = styled.div`
 	}
 `;
 
-const Input = ({ 
+const Input = forwardRef(({ 
 	left, 
 	right, 
 	placeholder, 
 	value, 
 	onChange,
 	className
-}) => (
+}, ref) => (
 	<Styled className={className}>
 		{left && <div>{left}</div>}
-		<input {...{ placeholder, value, onChange }} />
+		<input {...{ placeholder, value, onChange, ref }} />
 		{right && <div>{right}</div>}
 	</Styled>	
-);
+));
 
 export default Input;

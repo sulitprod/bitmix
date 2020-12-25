@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '../default/Button';
-import Coins from '../Coins';
+import Bits from '../Bits';
 import Icon from '../default/Icon';
 import Photo from '../default/Photo';
 import { declText } from '../../utils';
@@ -10,7 +10,7 @@ import { declText } from '../../utils';
 const ColoredIcon = styled(Icon)`
 	&& {
 		position: absolute;
-		left: -5px;
+		left: 3px;
 		top: 3px;
 		fill: ${p => p.bg};
 	}
@@ -48,13 +48,60 @@ const StyledAction = styled.div`
 		.mainText {
 			color: ${({theme}) => theme.white};
 		}
-		> .package {
-			background: ${({theme}) => theme.darkGray};
-			padding: ${({theme}) => theme.pg8};
+		&.package {
+			padding-left: ${({theme}) => theme.pg8};
+
+			> .mainText {
+				background: ${({theme}) => theme.darkGray};
+				padding: ${({theme}) => theme.pg8};
+			}
 		}
 	}
 `;
-const ActionsStyled = styled.div`
+const StyledGroupedAction = styled.div`
+	display: flex;
+	padding: ${({theme}) => theme.pg4};
+	color: ${({theme}) => theme.white};
+	flex-direction: column;
+
+	> div {
+		display: flex;
+		align-items: center;
+		padding: ${({theme}) => theme.pg4};
+
+		&.top {
+			justify-content: space-between;
+			
+			> .player {
+				display: flex;
+				align-items: center;
+				
+				> p {
+					margin-left: ${({theme}) => theme.pg8};
+				}
+			}
+		}
+		&.content {
+			flex-wrap: wrap;
+
+			> div {
+				display: flex;
+				align-items: center;
+				margin: ${({theme}) => theme.pg4};
+
+				&.package {
+					padding-left: ${({theme}) => theme.pg8};
+		
+					> .mainText {
+						background: ${({theme}) => theme.darkGray};
+						padding: ${({theme}) => theme.pg8};
+					}
+				}
+			}
+		}
+	}
+`;
+const StyledActions = styled.div`
 	background: ${({theme}) => theme.shadowGray};
 	display: flex;
 	flex-direction: column;
@@ -93,22 +140,55 @@ const Action = ({ photo_50, count, name, packages, color }) => (
 				<p>Игрок</p>
 				<p className='mainText'>{name}</p>
 				<p>добавил</p>
-				<Coins value={count} />
+				<Bits value={count} />
 			</div>
 		</div>
-		<div>
+		<div className='package'>
 			<StyledIcon src='packageTail' width={30} />
 			<ColoredIcon src='packageTail2' width={30} bg={color} />
-			<div className='mainText package'>{`${packages[0]} - ${packages[1]}`}</div>
+			<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
 		</div>
 	</StyledAction>
 );
 
+const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
+	<StyledGroupedAction>
+		<div className='top'>
+			<div className='player'>
+				<Photo src={photo_50} />
+				<p className='mainText'>{name}</p>
+			</div>
+			<Bits value={count} />
+		</div>
+		<div className='content'>{packagesList.map((packages, key) => (
+			<div className='package' key={key}>
+				<StyledIcon src='packageTail' width={30} />
+				<ColoredIcon src='packageTail2' width={30} bg={color} />
+				<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
+			</div>
+		))}</div>
+	</StyledGroupedAction>
+);
+
 const Actions = ({ Domination: { actions } }) => {
 	const [sortView, changeSortView] = useState(true);
+	let groupedActions = {};
+
+	for (const action of actions) {
+		const { id, packages, count } = action;
+
+		if (!(id in groupedActions)) groupedActions[id] = {
+			...action,
+			count: 0,
+			packagesList: []
+		}; 
+		groupedActions[id].packagesList.push(packages);
+		groupedActions[id].count += count;
+	}
+	groupedActions = Object.values(groupedActions);
 
 	return (
-		<ActionsStyled>
+		<StyledActions>
 			<div className='top'>
 				<div>
 					<p className='mainText'>История</p>
@@ -127,10 +207,12 @@ const Actions = ({ Domination: { actions } }) => {
 				sortView ? actions.map((action, key) => (
 					<Action key={key} {...action} />
 				)) :
-				<NoActionsText>Эта сортировка пока не доступна</NoActionsText> :
+				groupedActions.map((action, key) => (
+					<GroupedActions key={key} {...action} />
+				)) :
 				<NoActionsText>В игре пока не совершено действий</NoActionsText>}
 			</div>
-		</ActionsStyled>
+		</StyledActions>
 	);
 }
 

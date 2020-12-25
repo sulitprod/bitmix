@@ -1,4 +1,4 @@
-import Coins from '../Coins';
+import Bits from '../Bits';
 import Photo from '../default/Photo';
 
 const winners = [
@@ -37,7 +37,7 @@ export default function FooterPanel({ Domination }) {
 				<div className='sum'>
 					<p>Общая сумма</p>
 					<p className='separator'>•</p>
-					<Coins value={Domination.sum} />
+					<Bits value={Domination.sum} />
 				</div>
 			</div>
 			<style jsx>{`

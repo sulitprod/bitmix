@@ -19,11 +19,11 @@ const Styled = styled.div`
 	}
 `;
 
-const Coins = ({ value, className }) => (
+const Bits = ({ value, className }) => (
 	<Styled className={className}>
-		<Icon src='coins' />
+		<Icon src='bits' />
 		<p>{value}</p>
 	</Styled>
 );
 
-export default Coins;
+export default Bits;

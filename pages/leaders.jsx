@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Coins from '../components/Coins';
+import Bits from '../components/Bits';
 import Photo from '../components/default/Photo';
 
 import { Info, Content } from '../components/Styled';
@@ -52,7 +52,7 @@ const Leader = ({ photo_50, name, count, id }) => (
 			<Photo src={photo_50} />
 			<p>{name}</p>
 		</div>
-		<Coins value={count} className="count" />
+		<Bits value={count} className="count" />
 	</StyledLeader>
 );
 const Leaders = ({ info }) => (
