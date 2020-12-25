@@ -4,9 +4,9 @@ import manifest from '../public/manifest.json';
 import { config } from '../config';
 
 const MainHead = ({ title, description, path = '/' }) => {
-	const pageTitle = title || config.appName
-	const pageDescription = description || config.appDescription
-	const iconUrl = '/img/favicon.png'
+	const pageTitle = title || config.appName;
+	const pageDescription = description || config.appDescription;
+	const iconUrl = '/img/favicon.png';
 
 	return (
 		<> 
@@ -28,6 +28,6 @@ const MainHead = ({ title, description, path = '/' }) => {
 				}
 			`}</style>
 		</>
-	)
+	);
 }
 export default MainHead;

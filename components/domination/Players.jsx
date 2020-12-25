@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import Photo from '../Photo';
-import Icon from '../Icon';
+import Photo from '../default/Photo';
+import Icon from '../default/Icon';
 
 import { percent } from '../../utils';
 

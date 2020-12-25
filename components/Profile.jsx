@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 import Coins from './Coins';
-import Button from './Button';
-import Photo from './Photo';
+import Button from './default/Button';
+import Photo from './default/Photo';
 
 const Name = styled.p`
 	border-bottom: 1px solid ${({theme}) => theme.gray};
@@ -21,7 +21,7 @@ const Profile = () => {
 	};
 
 	return (
-		<div className='profile'>
+		<div>
 			<Button right={<Photo src={User.photo_50} />} align='right'>
 				<Name>{User.name}</Name>
 				<Styled value={User.balance} />

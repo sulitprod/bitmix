@@ -1,5 +1,5 @@
 import Coins from '../Coins';
-import Photo from '../Photo';
+import Photo from '../default/Photo';
 
 const winners = [
 	{

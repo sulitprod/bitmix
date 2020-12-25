@@ -1,14 +1,21 @@
 import styled from 'styled-components';
 
 import Profile from './Profile';
-import Button from './Button';
-import Link from './Link';
+import Button from './default/Button';
+import Link from './default/Link';
+import { rndColor } from '../utils';
 
 const Logo = styled.div`
-	color: ${({theme}) => theme.white};
+	color: ${p => p.bg};
 	cursor: pointer;
 	font-size: 20px;
 	font-weight: 600;
+	position: absolute;
+	margin: auto;
+	margin-left: 50%;
+	width: 80px;
+	left: -40px;
+	text-align: center;
 `;
 const Styled = styled.div`
 	align-items: center;
@@ -24,7 +31,7 @@ const Header = () => (
 			<Button href='/leaders' value='Лидеры' />
 		</div>
 		<Link href='/'>
-			<Logo>BITMIX</Logo>
+			<Logo bg={rndColor()}>BITMIX</Logo>
 		</Link>
 		<Profile />
 	</Styled>

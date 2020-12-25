@@ -18,7 +18,7 @@ const Styled = styled.div`
 const Icon = ({ src, width = 16, height, className }) => {
 	height = height || width;
 
-	const Svg = Svgs()[src];
+	const Svg = Svgs[src];
 
 	return (
 		<Styled {...{ width, height, className }}>

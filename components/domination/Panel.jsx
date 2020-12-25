@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
-import Button from '../Button';
-import Icon from '../Icon';
-import Input from '../Input';
+import Button from '../default/Button';
+import Icon from '../default/Icon';
+import Input from '../default/Input';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -31,7 +31,9 @@ const StyledInput = styled(Input)`
 	line-height: 24px;
 `;
 const StyledButton = styled(Button)`
-	line-height: 24px;
+	&& {
+		line-height: 24px;
+	}
 `;
 
 const Panel = ({ User }) => {

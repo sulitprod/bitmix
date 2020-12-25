@@ -1,13 +1,22 @@
 module.exports = {
 	webpack(config) {
-	  	config.module.rules.push({
+		config.module.rules.push({
 			test: /\.svg$/,
 			issuer: {
 				test: /\.(js|ts)x?$/,
 			},
 			use: ['@svgr/webpack'],
-	  	});
- 
-	  return config;
+		});
+
+		return config;
 	},
- };
+	async redirects() {
+		return [
+			{
+				source: '/',
+				destination: '/domination',
+				permanent: true,
+			},
+		]
+	}
+};

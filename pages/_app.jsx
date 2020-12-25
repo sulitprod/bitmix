@@ -3,7 +3,7 @@ import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import MainHead from '../components/MainHead';
 import Header from '../components/Header';
 import Subheader from '../components/Subheader';
-import Notifications from '../components/Notifications';
+import Notifications from '../components/default/Notifications';
 import manifest from '../public/manifest.json';
 
 const GlobalStyle = createGlobalStyle`
