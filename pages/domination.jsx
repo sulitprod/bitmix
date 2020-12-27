@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { getCollectionItems } from '../utils/firebase';
+import { dominationCollection, DominationContextProvider } from '../hooks/domination';
+
 import Grid from '../components/domination/Grid';
 import Panel from '../components/domination/Panel';
 import Players from '../components/domination/Players';
@@ -5,40 +9,44 @@ import FooterPanel from '../components/domination/FooterPanel';
 import Actions from '../components/domination/Actions';
 import { Info, Content } from '../components/Styled';
 import { declText, genGrid, rndColor } from '../utils';
-import { useState } from 'react';
 
 const Domination = ({ title, info, user }) => {
 	const [userBits, updateUserBits] = useState(0);
 
 	return (
-		<main>
-			<Info>
-				<div className="title">
-					<p className="name">{title}</p>
-					<p>•</p>
-					<p>Игра #{info.id}</p>
-				</div>
-				<div>{`${info.players.length} ${declText(info.players.length, 'участников', 'участник', 'участника')}`}</div>
-			</Info>
-			<Content>
-				<Players User={user} Domination={info} userBits={userBits} />
-				<Panel User={user} updateUserBits={updateUserBits} />
-				<Grid Domination={info} />
-				<FooterPanel Domination={info} />
-				<Actions Domination={info} />
-			</Content>
-		</main>
+		<DominationContextProvider dominations={info.dd}>
+			<main>
+				<Info>
+					<div className="title">
+						<p className="name">{title}</p>
+						<p>•</p>
+						<p>Игра #{info.id}</p>
+					</div>
+					<div>{`${info.players.length} ${declText(info.players.length, 'участников', 'участник', 'участника')}`}</div>
+				</Info>
+				<Content>
+					<Players User={user} Domination={info} userBits={userBits} />
+					<Panel User={user} updateUserBits={updateUserBits} />
+					<Grid Domination={info} />
+					<FooterPanel Domination={info} />
+					<Actions Domination={info} />
+				</Content>
+			</main>
+		</DominationContextProvider>
 	);
 }
 
 export default Domination;
 
-export async function getServerSideProps() {
+export const getServerSideProps = async () => {
+	const Domination = await getCollectionItems(dominationCollection());
+	console.log(Domination)
+
 	const props = {
 		title: 'Доминация',
+		dd: Domination,
 		info: {
-			id: 2, 
-			newColor: rndColor(),
+			id: 2,
 			cells: [],
 			sum: 500,
 			actions: [],

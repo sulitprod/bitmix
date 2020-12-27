@@ -9,7 +9,7 @@ const completeConfig = {
     serverPort,
     appSlug: packageJson.name,
     appVersion: packageJson.version,
-    appUrl: process.env.NEXT_PUBLIC_APP_URL,
+    appUrl: 'https://nextjs-pwa-firebase-boilerplate.vercel.app/',
     appName: manifest.name,
     appTagline: manifest.description,
     appDescription: `${manifest.name} – ${manifest.description}`,

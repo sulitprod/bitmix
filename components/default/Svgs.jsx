@@ -6,6 +6,7 @@ import sort from '../../public/svg/sort.svg';
 import gift from '../../public/svg/gift.svg';
 import packageTail from '../../public/svg/packageTail.svg';
 import packageTail2 from '../../public/svg/packageTail2.svg';
+import add from '../../public/svg/add.svg';
 
 export default {
 	trash, 
@@ -15,5 +16,6 @@ export default {
 	sort, 
 	gift, 
 	packageTail,
-	packageTail2
+	packageTail2,
+	add
 }

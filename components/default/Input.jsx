@@ -23,19 +23,19 @@ const Styled = styled.div`
 	}
 `;
 
-const Input = forwardRef(({ 
+const Input = ({
 	left, 
 	right, 
 	placeholder, 
 	value, 
 	onChange,
 	className
-}, ref) => (
+}) => (
 	<Styled className={className}>
 		{left && <div>{left}</div>}
-		<input {...{ placeholder, value, onChange, ref }} />
+		<input {...{ placeholder, value, onChange }} />
 		{right && <div>{right}</div>}
 	</Styled>	
-));
+);
 
 export default Input;

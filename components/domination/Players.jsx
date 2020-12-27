@@ -60,7 +60,7 @@ const Player = ({ photo_50, color, sum, count }) => (
 		{photo_50 ? 
 			<Photo src={photo_50} /> : 
 			<IconArea>
-				<Icon src='bits' />
+				<Icon src='add' />
 			</IconArea>
 		}
 	</StyledPlayer>

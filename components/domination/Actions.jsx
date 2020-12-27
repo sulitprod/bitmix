@@ -34,6 +34,9 @@ const StyledAction = styled.div`
 	color: ${({theme}) => theme.lightGray};
 	justify-content: space-between;
 
+	.mainText {
+		color: ${({theme}) => theme.white};
+	}
 	> div {
 		display: flex;
 		align-items: center;
@@ -44,9 +47,6 @@ const StyledAction = styled.div`
 				display: inline-block;
 				margin-right: 6px;
 			}
-		}
-		.mainText {
-			color: ${({theme}) => theme.white};
 		}
 		&.package {
 			padding-left: ${({theme}) => theme.pg8};
@@ -60,10 +60,12 @@ const StyledAction = styled.div`
 `;
 const StyledGroupedAction = styled.div`
 	display: flex;
-	padding: ${({theme}) => theme.pg4};
-	color: ${({theme}) => theme.white};
+	color: ${({theme}) => theme.lightGray};
 	flex-direction: column;
 
+	.mainText {
+		color: ${({theme}) => theme.white};
+	}
 	> div {
 		display: flex;
 		align-items: center;
@@ -157,6 +159,7 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 			<div className='player'>
 				<Photo src={photo_50} />
 				<p className='mainText'>{name}</p>
+				<p>({packagesList.length} {declText(packagesList.length, 'пакетов', 'пакет', 'пакета')})</p>
 			</div>
 			<Bits value={count} />
 		</div>
