@@ -1,5 +1,7 @@
 import Bits from '../Bits';
 import Photo from '../default/Photo';
+import { useDomination } from '../../hooks/domination';
+import styled from 'styled-components';
 
 const winners = [
 	{
@@ -18,62 +20,59 @@ const winners = [
 		photo_50: 'favicon.png',
 	},
 ];
+const Styled = styled.div`
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	width: 998px;
+	color: ${({theme}) => theme.white};
 
-export default function FooterPanel({ Domination }) {
-	return (
-		<>
-			<div className='footerPanel'>
-				<div className='winners'>
-					<ul>
-						{winners.map(({ photo_50 }, key) => (
-							<li key={key}>
-								<Photo src={photo_50} />
-							</li>
-						))}
-					</ul>
-					<p className='separator'>•</p>
-					<p>Последние победители</p>
-				</div>
-				<div className='sum'>
-					<p>Общая сумма</p>
-					<p className='separator'>•</p>
-					<Bits value={Domination.sum} />
-				</div>
-			</div>
-			<style jsx>{`
-				@import 'public/variables.scss';
+	> div {
+		align-items: center;
+		display: flex;
 
-				.footerPanel {
-					align-items: center;
-					display: flex;
-					justify-content: space-between;
-					width: 998px;
-					color: $white;
+		> .separator {
+			padding: 0 ${({theme}) => theme.pg8};
+		}
+	}
 
-					> div {
-						align-items: center;
-						display: flex;
+	> .winners {
+		> ul {
+			display: flex;
 
-						> .separator {
-							padding: 0 $pg8;
-						}
-					}
+			> li {
+				margin-right: ${({theme}) => theme.pg8};
 
-					> .winners {
-						> ul {
-							display: flex;
-
-							> li {
-								margin-right: $pg8;
-
-								&:nth-last-child(1) {
-									margin-right: 0;
-								}
-							}
-						}
-					}
+				&:nth-last-child(1) {
+					margin-right: 0;
 				}
-			`}</style>
-		</>
+			}
+		}
+	}
+`;
+
+export default function FooterPanel() {
+	const { domination } = useDomination();
+	const { sum } = domination[0];
+
+	return (
+		<Styled>
+			<div className='winners'>
+				<ul>
+					{winners.map(({ photo_50 }, key) => (
+						<li key={key}>
+							<Photo src={photo_50} />
+						</li>
+					))}
+				</ul>
+				<p className='separator'>•</p>
+				<p>Последние победители</p>
+			</div>
+			<div className='sum'>
+				<p>Общая сумма</p>
+				<p className='separator'>•</p>
+				<Bits value={sum} />
+			</div>
+		</Styled>
 	);
 }

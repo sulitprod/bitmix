@@ -4,6 +4,7 @@ import Photo from '../default/Photo';
 import Icon from '../default/Icon';
 
 import { percent } from '../../utils';
+import { useDomination } from '../../hooks/domination';
 
 const Line = styled.div.attrs(p => ({
 	style: {
@@ -51,11 +52,20 @@ const IconArea = styled.div`
 	padding: 12px;
 	background: ${({theme}) => theme.darkGray};
 `;
+const BonusText = styled.div`
+	color: #53e253;
+	position: absolute;
+	left: -108px;
+	text-align: right;
+	width: 100px;
+`;
 
 const Player = ({ photo_50, color, sum, count }) => (
 	<StyledPlayer>
 		<div className='line'>
-			<Line {...{ sum, count, bg: color || '' }} />
+			<Line {...{ sum, count, bg: color || '' }}>
+				{sum == count ? <BonusText>+2% к выигрышу</BonusText> : ''}
+			</Line>
 		</div>
 		{photo_50 ? 
 			<Photo src={photo_50} /> : 
@@ -66,14 +76,16 @@ const Player = ({ photo_50, color, sum, count }) => (
 	</StyledPlayer>
 );
 
-const Players = ({ Domination: { players, sum }, userBits }) => {
-	sum = sum + userBits; 
+const Players = ({ userBits }) => {
+	const { domination } = useDomination();
+	const { sum, players } = domination[0];
+	const newSum = sum + userBits; 
 
 	return (
 	<StyledPlayers>
-		{userBits ? <Player {...{ count: userBits }}{...{ sum }} /> : ''}
-		{players.length ? players.map((player, key) => (
-			<Player {...player}{...{ key, sum }} />
+		{userBits ? <Player {...{ count: userBits, sum: newSum }} /> : ''}
+		{players.length || userBits ? players.map((player, key) => (
+			<Player {...player}{...{ key, sum: newSum }} />
 		)) : 
 		<GiftText>
 			<StyledIcon src='gift' width={64} />

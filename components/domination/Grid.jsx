@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import styled, { keyframes } from 'styled-components';
+import { useDomination } from '../../hooks/domination';
 
 const gradient = keyframes`
 	0% {
@@ -54,14 +55,19 @@ const Styled = styled.div`
 // 	z-index: 2;
 // }
 
-const Grid = ({ Domination }) => (
-		<Styled className={cn({ stageAwait: Domination.players.length, stageNo: !Domination.players.length })}>
-			{Domination.cells.map((id, key) => {
-				const { color } = Domination.players[id];
+const Grid = () => {
+	const { domination } = useDomination();
+	const { cells, players } = domination[0];
+		
+	return (
+		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>
+			{cells.map((id, key) => {
+				const { color } = players[id];
 
 				return <Bit {...{key, bg: color}} />;
 			})}
 		</Styled>
-);
+	);
+}
 
 export default Grid;

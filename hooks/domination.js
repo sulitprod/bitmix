@@ -10,12 +10,12 @@ export const dominationPath = (domination) => ({
 	href: `/dominations/[slug]?slug=${getDominationSlug(domination)}`,
 	as: `/dominations/${getDominationSlug(domination)}`
 });
-export const DominationsContext = createContext();
+export const DominationContext = createContext();
 export const DominationContextProvider = (props) => {
-	const [dominations, setDominations] = useState(props.dominations);
+	const [domination, setDomination] = useState(props.domination);
 
 	useEffect(
-		() => dominationCollection().onSnapshot(snapshot => getCollectionItems(dominationCollection()).then(setDominations)),
+		() => dominationCollection().onSnapshot(snapshot => getCollectionItems(dominationCollection()).then(setDomination)),
 		[]
 	);
 
@@ -24,7 +24,7 @@ export const DominationContextProvider = (props) => {
 		const newDominationRef = await dominationCollection().add(valuesWithTimestamp);
 		const newDominationSnapshot = await newDominationRef.get();
 		
-		setDominations([ ...dominations, docWithId(newDominationSnapshot) ]);
+		setDomination([ ...domination, docWithId(newDominationSnapshot) ]);
 		
 		return docWithId(newDominationSnapshot);
 	}
@@ -37,7 +37,7 @@ export const DominationContextProvider = (props) => {
 
 		const dominationSnapshot = await dominationRef(id).get();
 
-		setDominations(dominations.map(domination => domination.id === id ? docWithId(dominationSnapshot) : domination));
+		setDomination(domination.map(d => d.id === id ? docWithId(dominationSnapshot) : d));
 
 		return docWithId(dominationSnapshot);
 	}
@@ -47,15 +47,15 @@ export const DominationContextProvider = (props) => {
 		
 		await dominationRef(id).delete();
 		
-		setDominations(dominations.filter(domination => domination.id !== id));
+		setDomination(domination.filter(d => d.id !== id));
 		
 		return variables;
-  }
+  	}
 
-  const dominationsContext = { dominations, addDomination, updateDomination, deleteDomination }
+  	const dominationContext = { domination, addDomination, updateDomination, deleteDomination }
 
-  return <DominationsContext.Provider value={dominationsContext}>{props.children}</DominationsContext.Provider>
+  	return <DominationContext.Provider value={dominationContext}>{props.children}</DominationContext.Provider>
 }
 
-export const { Consumer: DominationsContextConsumer } = DominationsContext
-export const useDominations = () => useContext(DominationsContext)
+export const { Consumer: DominationContextConsumer } = DominationContext
+export const useDomination = () => useContext(DominationContext)

@@ -27,7 +27,6 @@ module.exports = {
 	firebase,
 	firebaseApp,
 	firebaseDB,
-
 	docWithId,
 	getDocumentItem,
 	getCollectionItems

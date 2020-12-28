@@ -5,6 +5,13 @@ import Button from './default/Button';
 import Link from './default/Link';
 import { rndColor } from '../utils';
 
+const Styled = styled.div`
+	align-items: center;
+	display: flex;
+	padding: ${({theme}) => theme.pg8};
+	width: 100%;
+	justify-content: space-between;
+`;
 const Logo = styled.div`
 	color: ${p => p.bg};
 	cursor: pointer;
@@ -17,21 +24,14 @@ const Logo = styled.div`
 	left: -40px;
 	text-align: center;
 `;
-const Styled = styled.div`
-	align-items: center;
-	display: flex;
-	padding: ${({theme}) => theme.pg8};
-	width: 100%;
-	justify-content: space-between;
-`;
 
-const Header = () => (
+const Header = ({ color }) => (
 	<Styled>
 		<div>
 			<Button href='/leaders' value='Лидеры' />
 		</div>
 		<Link href='/'>
-			<Logo bg={rndColor()}>BITMIX</Logo>
+			<Logo bg={color}>BITMIX</Logo>
 		</Link>
 		<Profile />
 	</Styled>

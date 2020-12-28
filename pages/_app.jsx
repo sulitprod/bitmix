@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Subheader from '../components/Subheader';
 import Notifications from '../components/default/Notifications';
 import manifest from '../public/manifest.json';
+import { rndColor } from '../utils';
 
 const GlobalStyle = createGlobalStyle`
 	* {
@@ -37,18 +38,22 @@ const theme = {
 };
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description } = pageProps;
+	const { title, description, color } = pageProps;
 
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyle />
 			<MainHead {...{ title, description }} />
-			<Header />
+			<Header {...{ color }} />
 			<Subheader />
 			<Component {...pageProps}{...router} />
 			<Notifications />
 		</ThemeProvider>
 	);
+}
+
+App.getInitialProps = async () => {
+	return { pageProps: { color: rndColor() } }
 }
 
 export default App;
