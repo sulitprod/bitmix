@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Info = styled.div`
-	margin-top: 32px;
+	margin: 32px 0;
 	padding: ${({theme}) => theme.pg4};
 	text-align: center;
 
