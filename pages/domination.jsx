@@ -18,27 +18,33 @@ const DominationProvider = ({ info, title, user }) => (
 
 const Domination = ({ title, user }) => {
 	const [userBits, updateUserBits] = useState(0);
-	const { domination } = useDomination();
+	const { domination, createDomination } = useDomination();
+
+	if (!domination.length) createDomination();
 
 	const { players, id } = domination[0];
 
 	return (
 		<main>
-			<Info>
-				<div className="title">
-					<p className="name">{title}</p>
-					<p>•</p>
-					<p>Игра #{id}</p>
-				</div>
-				<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
-			</Info>
-			<Content>
-				<Players User={user} userBits={userBits} />
-				<Panel User={user} updateUserBits={updateUserBits} />
-				<Grid />
-				<FooterPanel />
-				<Actions />
-			</Content>
+			{ domination.length ? 
+			<>
+				<Info>
+					<div className="title">
+						<p className="name">{title}</p>
+						<p>•</p>
+						<p>Игра #{id}</p>
+					</div>
+					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
+				</Info>
+				<Content>
+					<Players User={user} userBits={userBits} />
+					<Panel User={user} updateUserBits={updateUserBits} />
+					<Grid />
+					<FooterPanel />
+					<Actions />
+				</Content>
+			</> :
+			<div>Пока не создано не одной игры</div> }
 		</main>
 	);
 }

@@ -3,6 +3,7 @@
 	"description": "A gaming platform where players can fight and win",
 	"version": "0.0.1",
 	"author": "Gleb Grinser",
+	"repository": "github:sulitprod/bitmix",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",

@@ -7,6 +7,8 @@ import gift from '../../public/svg/gift.svg';
 import packageTail from '../../public/svg/packageTail.svg';
 import packageTail2 from '../../public/svg/packageTail2.svg';
 import add from '../../public/svg/add.svg';
+import load from '../../public/svg/load.svg';
+import hatching from '../../public/svg/hatching.svg';
 
 export default {
 	trash, 
@@ -17,5 +19,7 @@ export default {
 	gift, 
 	packageTail,
 	packageTail2,
-	add
+	add,
+	load,
+	hatching
 }

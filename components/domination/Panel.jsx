@@ -5,6 +5,9 @@ import Button from '../default/Button';
 import Icon from '../default/Icon';
 import Input from '../default/Input';
 
+import showNotification from '../../utils/showNotifications';
+import { useDomination } from '../../hooks/domination';
+
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
 	['+0.1', (value) => value + 0.1],
@@ -34,15 +37,20 @@ const StyledButton = styled(Button)`
 	&& {
 		line-height: 24px;
 	}
+	&.add > .value {
+		width: 150px;
+	}
 `;
 
 const Panel = ({ User, updateUserBits }) => {
 	const [inputValue, setInputValue] = useState('');
+	const [inProgress, setInProgress] = useState(false);
+	const { addDomination } = useDomination();
 	const onChange = ({ target: value }) => {
 		setInputValue(value);
 		updateUserBits(Number(value));
 	}
-	const onClick = (handler) => {
+	const changeValue = (handler) => {
 		const newValue = handler(
 			Number(inputValue),
 			User.balance
@@ -50,6 +58,13 @@ const Panel = ({ User, updateUserBits }) => {
 
 		setInputValue(newValue);
 		updateUserBits(newValue);
+	}
+	const addValue = async () => {
+		setInProgress(true);
+		await addDomination();
+		setInputValue('');
+		setInProgress(false);
+		showNotification('Биты добавлены', 'success');
 	}
 
 	return (
@@ -59,15 +74,22 @@ const Panel = ({ User, updateUserBits }) => {
 					key={key}
 					type='main'
 					value={value}
-					onClick={() => onClick(handler)}
+					onClick={() => changeValue(handler)}
 				/>
 			))}
 			<StyledInput
 				placeholder='Количество'
 				value={inputValue}
 				onChange={onChange}
+				disabled={inProgress}
 			/>
-			<StyledButton type='main' value='Добавить биты' />
+			<StyledButton 
+				className='add' 
+				type='main' 
+				value='Добавить биты' 
+				loading={inProgress}
+				onClick={addValue} 
+			/>
 		</Styled>
 	);
 }

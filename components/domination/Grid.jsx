@@ -43,10 +43,6 @@ const Styled = styled.div`
 		rgb(58, 58, 58)
 		);
 		background-size: 400% 400%;
-			
-			> p {
-				background: transparent;
-			}
 	}
 `;
 
@@ -62,7 +58,7 @@ const Grid = () => {
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>
 			{cells.map((id, key) => {
-				const { color } = players[id];
+				const { color } = players[id] || 'transparent';
 
 				return <Bit {...{key, bg: color}} />;
 			})}

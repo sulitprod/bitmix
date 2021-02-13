@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { genGrid } from '../utils';
 import { firebase, firebaseDB, docWithId, getCollectionItems } from '../utils/firebase';
 
 const toSlug = (str) => str && str.replace(/ /g, '-').replace(/[^\w-]+/g, '').toLowerCase();
@@ -19,15 +20,27 @@ export const DominationContextProvider = (props) => {
 		[]
 	);
 
-	const addDomination = async (variables) => {
-		const valuesWithTimestamp = { ...variables, dateCreated: firebase.firestore.FieldValue.serverTimestamp() }
-		const newDominationRef = await dominationCollection().add(valuesWithTimestamp);
+	const createDomination = async () => {
+		const values = {
+			created: firebase.firestore.FieldValue.serverTimestamp(),
+			cells: genGrid([], 1441),
+			players: [],
+			actions: [],
+			sum: 0
+		}
+		const newDominationRef = await dominationCollection().add(values);
 		const newDominationSnapshot = await newDominationRef.get();
 		
 		setDomination([ ...domination, docWithId(newDominationSnapshot) ]);
 		
 		return docWithId(newDominationSnapshot);
 	}
+
+	// const addBits = async (variables) => {
+	// 	const { id, ...values } = variables;
+		
+	// 	updateDomination()
+	// }
 
 	const updateDomination = async (variables) => {
 		const { id, ...values } = variables;
@@ -52,7 +65,7 @@ export const DominationContextProvider = (props) => {
 		return variables;
   	}
 
-  	const dominationContext = { domination, addDomination, updateDomination, deleteDomination }
+  	const dominationContext = { domination, createDomination, updateDomination, deleteDomination }
 
   	return <DominationContext.Provider value={dominationContext}>{props.children}</DominationContext.Provider>
 }

@@ -10,12 +10,13 @@ const Styled = styled.div`
 
 	> svg {
 		fill: unset;
-		height: ${p => p.height}px;
-		width: ${p => p.width}px;
+		height: ${p => p.height};
+		width: ${p => p.width};
 	}
 `;
 
 const Icon = ({ src, width = 16, height, className }) => {
+	width = typeof width === 'string' ? width : width + 'px';
 	height = height || width;
 
 	const Svg = Svgs[src];
