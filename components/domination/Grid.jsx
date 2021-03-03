@@ -51,9 +51,8 @@ const Styled = styled.div`
 // 	z-index: 2;
 // }
 
-const Grid = () => {
-	const { domination } = useDomination();
-	const { cells, players } = domination[0];
+const Grid = ({ domination }) => {
+	const { cells, players } = domination;
 		
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>

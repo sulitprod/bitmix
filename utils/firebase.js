@@ -13,6 +13,7 @@ const firebaseConfig = {
 }
 const firebaseApp = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
 const firebaseDB = firebaseApp.firestore();
+
 const docWithId = (doc) => ({ id: doc.id, ...doc.data() });
 const getDocumentItem = async (docRef) => docWithId(await docRef.get());
 const getCollectionItems = async (collectionRef) => {

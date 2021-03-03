@@ -5,8 +5,8 @@ import Button from '../default/Button';
 import Bits from '../Bits';
 import Icon from '../default/Icon';
 import Photo from '../default/Photo';
+
 import { declText } from '../../utils';
-import { useDomination } from '../../hooks/domination';
 
 const ColoredIcon = styled(Icon)`
 	&& {
@@ -16,7 +16,6 @@ const ColoredIcon = styled(Icon)`
 		fill: ${p => p.bg};
 	}
 `;
-
 const StyledIcon = styled(Icon)`
 	&& {
 		fill: ${({theme}) => theme.darkGray};
@@ -174,10 +173,9 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 	</StyledGroupedAction>
 );
 
-const Actions = () => {
+const Actions = ({ domination }) => {
 	const [sortView, changeSortView] = useState(true);
-	const { domination } = useDomination();
-	const { actions } = domination[0];
+	const { actions } = domination;
 	let groupedActions = {};
 
 	for (const action of actions) {

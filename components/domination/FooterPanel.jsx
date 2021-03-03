@@ -1,7 +1,7 @@
+import styled from 'styled-components';
+
 import Bits from '../Bits';
 import Photo from '../default/Photo';
-import { useDomination } from '../../hooks/domination';
-import styled from 'styled-components';
 
 const winners = [
 	{
@@ -51,9 +51,8 @@ const Styled = styled.div`
 	}
 `;
 
-export default function FooterPanel() {
-	const { domination } = useDomination();
-	const { sum } = domination[0];
+export default function FooterPanel({ domination }) {
+	const sum = domination.players.reduce((all, { count }) => all + count, 0);
 
 	return (
 		<Styled>

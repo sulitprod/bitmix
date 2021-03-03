@@ -1,4 +1,6 @@
 export default function generateGrid(players, charsCount) {
+	charsCount = charsCount || 1443;
+
 	const charsAll = [];
 
 	if (!players.length) {
@@ -10,8 +12,8 @@ export default function generateGrid(players, charsCount) {
 		const chars = players.map(({ count }) => (charsCount / 100) * (count / (sum / 100)));
 		const charsRounded = chars.map((i) => Math.floor(i) + 1);
 
-		for (let i = 0; i < charsCount; i++) {
-			const max = charsRounded.indexOf(Math.max(charsRounded));
+		while (charsRounded.reduce((all, i) => all + i) !== charsCount) {
+			const max = charsRounded.indexOf(Math.max(...charsRounded));
 			charsRounded[max] -= 1;
 		}
 		for (const p in charsRounded) {

@@ -6,7 +6,7 @@ import Icon from '../default/Icon';
 import Input from '../default/Input';
 
 import showNotification from '../../utils/showNotifications';
-import { useDomination } from '../../hooks/domination';
+import { addBits } from '../../hooks/domination';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -42,18 +42,17 @@ const StyledButton = styled(Button)`
 	}
 `;
 
-const Panel = ({ User, updateUserBits }) => {
+const Panel = ({ user, updateUserBits, domination }) => {
 	const [inputValue, setInputValue] = useState('');
 	const [inProgress, setInProgress] = useState(false);
-	const { addDomination } = useDomination();
-	const onChange = ({ target: value }) => {
-		setInputValue(value);
-		updateUserBits(Number(value));
+	const onChange = ({ target }) => {
+		setInputValue(target.value);
+		updateUserBits(Number(target.value));
 	}
 	const changeValue = (handler) => {
 		const newValue = handler(
 			Number(inputValue),
-			User.balance
+			user.balance
 		);
 
 		setInputValue(newValue);
@@ -61,7 +60,8 @@ const Panel = ({ User, updateUserBits }) => {
 	}
 	const addValue = async () => {
 		setInProgress(true);
-		await addDomination();
+		await addBits(domination.id, user.id, Number(inputValue), domination);
+		updateUserBits(0);
 		setInputValue('');
 		setInProgress(false);
 		showNotification('Биты добавлены', 'success');

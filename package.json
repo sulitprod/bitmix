@@ -20,6 +20,7 @@
 		"random": "^2.2.0",
 		"react": "latest",
 		"react-dom": "latest",
+		"react-firebase-hooks": "^2.2.0",
 		"react-toastify": "^6.0.8",
 		"styled-components": "^5.2.1",
 		"underscore": "^1.12.0"
