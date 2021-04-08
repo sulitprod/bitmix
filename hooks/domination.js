@@ -1,7 +1,9 @@
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 import { genGrid, rndColor } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 
-export const addBits = async (gameId, playerId, count, domination) => {
+export const addBits = async (playerId, count, domination) => {
 	let newPlayer = null;
 
 	for (const player of domination.players) if (player.id === playerId) newPlayer = player;
@@ -23,5 +25,57 @@ export const addBits = async (gameId, playerId, count, domination) => {
 	newPlayer.count += count;
 	domination.cells = genGrid(domination.players);
 
-	await firebaseDB.collection('domination').doc(gameId).update(domination);
+	await firebaseDB.collection('current').doc('domination').update(domination);
+}
+
+export const getDomination = async () => {
+	const current = await firebaseDB.collection('current').doc('domination').get();
+
+	if (current.exists) {
+		const domination = current.data();
+
+		for (const key in domination) {
+			const value = domination[key];
+			
+			if (typeof value === 'object' && value.constructor.name === 'Timestamp')
+				domination[key] = value.toDate().toString();
+		}
+
+		return domination;
+	} else {
+		const domination = await firebaseDB.collection('current').doc('domination').set({
+			id: 0,
+			actions: [],
+			cells: genGrid([]),
+			players: [],
+			status: 0,
+			created: firebase.firestore.FieldValue.serverTimestamp()
+		});
+		console.log(domination);
+	}
+}
+
+export const createDomination = async () => {
+	const current = await firebaseDB.collection('current').doc('domination').get();
+	let id = 0;
+
+	if (current.exists) {
+		const data = current.data();
+
+		await firebaseDB.collection('domination').add(data);
+		id = data.id + 1;
+	}
+	await firebaseDB.collection('current').doc('domination').set({
+		id,
+		actions: [],
+		cells: genGrid([]),
+		players: [],
+		status: 0,
+		created: firebase.firestore.FieldValue.serverTimestamp()
+	});
+	// const info = await firebaseDB.collection('info').doc('domination').get();
+	// const id = info.data().id;
+	// const game = await info.data().game.get();
+	// console.log(info);
+	// console.log(game);
 }

@@ -37,6 +37,18 @@ const theme = {
 	pg4: '4px'
 };
 
+const lightTheme = {
+	bodyBackground: '#EDEEF0',
+	white: '#000000',
+	gray: '#d8d8d8',
+	darkGray: '#cacaca',
+	darkGrayHover: '#dadada',
+	shadowGray: '#e2e2e2',
+	lightGray: '#9a9a9a',
+	pg8: '8px',
+	pg4: '4px'
+}
+
 const App = ({ Component, err, pageProps, router }) => {
 	const { title, description, color } = pageProps;
 

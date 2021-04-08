@@ -174,7 +174,7 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 );
 
 const Actions = ({ domination }) => {
-	const [sortView, changeSortView] = useState(true);
+	const [ sortView, changeSortView ] = useState(true);
 	const { actions } = domination;
 	let groupedActions = {};
 

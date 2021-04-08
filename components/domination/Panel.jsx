@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import random from 'random';
 
 import Button from '../default/Button';
 import Icon from '../default/Icon';
@@ -32,13 +33,18 @@ const Styled = styled.div`
 `;
 const StyledInput = styled(Input)`
 	line-height: 24px;
+	width: 0;
+	flex-grow: 1;
 `;
 const StyledButton = styled(Button)`
 	&& {
 		line-height: 24px;
 	}
-	&.add > .value {
-		width: 150px;
+	&.values {
+		flex-basis: 64px;
+	}
+	&.add {
+		flex-basis: 166px;
 	}
 `;
 
@@ -60,7 +66,8 @@ const Panel = ({ user, updateUserBits, domination }) => {
 	}
 	const addValue = async () => {
 		setInProgress(true);
-		await addBits(domination.id, user.id, Number(inputValue), domination);
+		// user.id
+		await addBits(random.int(0, 10), Number(inputValue), domination);
 		updateUserBits(0);
 		setInputValue('');
 		setInProgress(false);
@@ -71,6 +78,7 @@ const Panel = ({ user, updateUserBits, domination }) => {
 		<Styled>
 			{BUTTONS.map(([value, handler], key) => (
 				<StyledButton
+					className='values'
 					key={key}
 					type='main'
 					value={value}
