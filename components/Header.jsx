@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Profile from './Profile';
 import Button from './default/Button';
 import Link from './default/Link';
-import { rndColor } from '../utils';
+import Photo from './default/Photo';
 
 const Styled = styled.div`
 	align-items: center;
@@ -25,7 +25,7 @@ const Logo = styled.div`
 	text-align: center;
 `;
 
-const Header = ({ color }) => (
+const Header = ({ color, user }) => (
 	<Styled>
 		<div>
 			<Button href='/leaders' value='Лидеры' />
@@ -33,7 +33,10 @@ const Header = ({ color }) => (
 		<Link href='/'>
 			<Logo bg={color}>BITMIX</Logo>
 		</Link>
-		<Profile />
+		{ user ? 
+			<Profile user={user} /> :
+			<Button right={<Photo src='favicon.png' />} align='right' value='Вход' />
+		}
 	</Styled>
 );
 

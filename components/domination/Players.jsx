@@ -84,14 +84,14 @@ const Players = ({ userBits, domination, user }) => {
 	const newSum = sum + userBits;
 	let inGame = false;
 
-	for (const player of players) if (player.id === user.id) inGame = true;
+	if (user) for (const player of players) if (player.id === user.id) inGame = true;
 
 	const withUserPlayers = userBits && !inGame ? [ ...players, { id: user.id, count: userBits } ] : players;
 
 	return (
 		<StyledPlayers>
 			{ withUserPlayers.length ? withUserPlayers.map((player, key) => (
-				<Player {...player}{...{ key, sum: newSum, currentUser: player.id === user.id, userBits }} />
+				<Player {...player}{...{ key, sum: newSum, currentUser: !user ? false : player.id === user.id, userBits }} />
 			)) : 
 			<GiftText>
 				<StyledIcon src='gift' width={64} />

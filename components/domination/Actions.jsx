@@ -26,7 +26,8 @@ const StyledIcon = styled(Icon)`
 const NoActionsText = styled.div`
 	text-align: center;
 	color: ${({theme}) => theme.lightGray};
-	padding: ${({theme}) => theme.pg8};
+	padding: ${({theme}) => theme.pg12};
+	line-height: 16px;
 `;
 const StyledAction = styled.div`
 	display: flex;
@@ -46,14 +47,6 @@ const StyledAction = styled.div`
 			> * {
 				display: inline-block;
 				margin-right: 6px;
-			}
-		}
-		&.package {
-			padding-left: ${({theme}) => theme.pg8};
-
-			> .mainText {
-				background: ${({theme}) => theme.darkGray};
-				padding: ${({theme}) => theme.pg8};
 			}
 		}
 	}
@@ -89,20 +82,19 @@ const StyledGroupedAction = styled.div`
 			> div {
 				display: flex;
 				align-items: center;
-				margin: ${({theme}) => theme.pg4};
-
-				&.package {
-					padding-left: ${({theme}) => theme.pg8};
-		
-					> .mainText {
-						background: ${({theme}) => theme.darkGray};
-						padding: ${({theme}) => theme.pg8};
-					}
-				}
+				margin-right: ${({theme}) => theme.pg4};
 			}
 		}
 	}
 `;
+const StyledPackage = styled.div`
+	padding-left: ${({theme}) => theme.pg8};
+			
+	> .mainText {
+		background: ${({theme}) => theme.darkGray};
+		padding: ${({theme}) => theme.pg8};
+	}
+`
 const StyledActions = styled.div`
 	background: ${({theme}) => theme.shadowGray};
 	display: flex;
@@ -134,6 +126,14 @@ const StyledActions = styled.div`
 	}
 `;
 
+const Package = ({ color, packages }) => (
+	<StyledPackage>
+			<StyledIcon src='packageTail' width={30} />
+			<ColoredIcon src='packageTail2' width={30} bg={color} />
+			<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
+	</StyledPackage>
+)
+
 const Action = ({ photo_50, count, name, packages, color }) => (
 	<StyledAction>
 		<div>
@@ -145,11 +145,7 @@ const Action = ({ photo_50, count, name, packages, color }) => (
 				<Bits value={count} />
 			</div>
 		</div>
-		<div className='package'>
-			<StyledIcon src='packageTail' width={30} />
-			<ColoredIcon src='packageTail2' width={30} bg={color} />
-			<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
-		</div>
+		<Package {...{ color, packages }} />
 	</StyledAction>
 );
 
@@ -164,11 +160,7 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 			<Bits value={count} />
 		</div>
 		<div className='content'>{packagesList.map((packages, key) => (
-			<div className='package' key={key}>
-				<StyledIcon src='packageTail' width={30} />
-				<ColoredIcon src='packageTail2' width={30} bg={color} />
-				<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
-			</div>
+			<Package {...{ color, packages }} key={key} />
 		))}</div>
 	</StyledGroupedAction>
 );
@@ -176,9 +168,10 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 const Actions = ({ domination }) => {
 	const [ sortView, changeSortView ] = useState(true);
 	const { actions } = domination;
+	const sortedActions = actions.slice(0).reverse();
 	let groupedActions = {};
 
-	for (const action of actions) {
+	for (const action of sortedActions) {
 		const { id, packages, count } = action;
 
 		if (!(id in groupedActions)) groupedActions[id] = {
@@ -197,9 +190,11 @@ const Actions = ({ domination }) => {
 				<div>
 					<p className='mainText'>История</p>
 					<p className='separator'>•</p>
-					<p>{actions.length ? 
-					`${actions.length} ${declText(actions.length, 'действий', 'действие', 'действия')}` :
-					'Нет действий'}</p>
+					<p>{
+					sortedActions.length ? 
+					`${sortedActions.length} ${declText(sortedActions.length, 'действий', 'действие', 'действия')}` :
+					'Нет действий'
+					}</p>
 				</div>
 				<div>
 					<Button type='main' children={<Icon src='sort' width={24} />} onClick={() => changeSortView(true)} active={sortView} />
@@ -207,8 +202,8 @@ const Actions = ({ domination }) => {
 				</div>
 			</div>
 			<div className='content'>
-				{actions.length ? 
-				sortView ? actions.map((action, key) => (
+				{sortedActions.length ? 
+				sortView ? sortedActions.map((action, key) => (
 					<Action key={key} {...action} />
 				)) :
 				groupedActions.map((action, key) => (

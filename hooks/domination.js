@@ -21,9 +21,18 @@ export const addBits = async (playerId, count, domination) => {
 			...domination.players
 		];
 	}
-	newPlayer.bits.push({ 0: newPlayer.count * 10 + 1, 1: (newPlayer.count + count) * 10, 2: count });
+	const packages = { 0: newPlayer.count * 10 + 1, 1: (newPlayer.count + count) * 10 } 
+	newPlayer.bits.push({ ...packages, 2: count });
 	newPlayer.count += count;
 	domination.cells = genGrid(domination.players);
+	domination.actions.push({
+		id: newPlayer.id,
+		photo_50: newPlayer.photo_50, 
+		count,
+		name: `${newPlayer.name}-${newPlayer.id}`,
+		packages, 
+		color: newPlayer.color
+	});
 
 	await firebaseDB.collection('current').doc('domination').update(domination);
 }

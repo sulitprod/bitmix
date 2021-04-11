@@ -47,20 +47,31 @@ const StyledButton = styled(Button)`
 		flex-basis: 166px;
 	}
 `;
+const AuthText = styled.div`
+	text-align: center;
+	padding: ${({theme}) => theme.pg12};
+	line-height: 16px;
+	color: ${({theme}) => theme.lightGray};
+`;
 
 const Panel = ({ user, updateUserBits, domination }) => {
 	const [inputValue, setInputValue] = useState('');
 	const [inProgress, setInProgress] = useState(false);
 	const onChange = ({ target }) => {
-		setInputValue(target.value);
-		updateUserBits(Number(target.value));
+		let newValue = Number(target.value);
+
+		if (isNaN(newValue)) newValue = inputValue;
+		if (newValue > user.balance) newValue = user.balance;
+		setInputValue(newValue);
+		updateUserBits(newValue);
 	}
 	const changeValue = (handler) => {
-		const newValue = handler(
+		let newValue = handler(
 			Number(inputValue),
 			user.balance
 		);
 
+		if (newValue > user.balance) newValue = user.balance;
 		setInputValue(newValue);
 		updateUserBits(newValue);
 	}
@@ -75,6 +86,7 @@ const Panel = ({ user, updateUserBits, domination }) => {
 	}
 
 	return (
+		user ? 
 		<Styled>
 			{BUTTONS.map(([value, handler], key) => (
 				<StyledButton
@@ -90,6 +102,7 @@ const Panel = ({ user, updateUserBits, domination }) => {
 				value={inputValue}
 				onChange={onChange}
 				disabled={inProgress}
+				max={user.balance}
 			/>
 			<StyledButton 
 				className='add' 
@@ -98,7 +111,8 @@ const Panel = ({ user, updateUserBits, domination }) => {
 				loading={inProgress}
 				onClick={addValue} 
 			/>
-		</Styled>
+		</Styled> :
+		<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
 	);
 }
 

@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import styled from 'styled-components';
 
 const Styled = styled.div`
@@ -29,13 +28,18 @@ const Input = ({
 	placeholder, 
 	value, 
 	onChange,
-	className
-}) => (
-	<Styled className={className}>
-		{left && <div>{left}</div>}
-		<input {...{ placeholder, value, onChange }} />
-		{right && <div>{right}</div>}
-	</Styled>	
-);
+	className,
+	max,
+	min,
+	pattern
+}) => {
+	return (
+		<Styled className={className}>
+			{left && <div>{left}</div>}
+			<input {...{ placeholder, value, onChange }} />
+			{right && <div>{right}</div>}
+		</Styled>
+	)
+};
 
 export default Input;

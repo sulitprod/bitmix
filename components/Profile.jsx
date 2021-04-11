@@ -13,18 +13,12 @@ const Styled = styled(Bits)`
 	padding-top: ${({theme}) => theme.pg4} !important;
 `;
 
-const Profile = () => {
-	const User = {
-		photo_50: 'favicon.png',
-		name: 'Gleb',
-		balance: 300
-	};
-
+const Profile = ({ user }) => {
 	return (
 		<div>
-			<Button right={<Photo src={User.photo_50} />} align='right'>
-				<Name>{User.name}</Name>
-				<Styled value={User.balance} />
+			<Button right={<Photo src={user.photo_50} />} align='right'>
+				<Name>{user.name}</Name>
+				<Styled value={user.balance} />
 			</Button>
 		</div>	
 	);

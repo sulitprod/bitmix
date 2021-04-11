@@ -19,7 +19,6 @@ const Domination = ({ title, user, startDomination }) => {
 		firebaseDB.collection('current').doc('domination'),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
-
 	const domination = getDomination || startDomination;
 
 	return (
@@ -54,13 +53,7 @@ export const getStaticProps = async () => {
 	const startDomination = await getDomination();
 	const props = {
 		title: 'Доминация',
-		startDomination,
-		user: {
-			id: 3,
-			photo_50: 'favicon.png',
-			name: 'Gleb',
-			balance: 300
-		}
+		startDomination
 	}
 
 	return { props }

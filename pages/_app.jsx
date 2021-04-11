@@ -33,6 +33,7 @@ const theme = {
 	darkGrayHover: '#1b1b1b',
 	shadowGray: '#2F2F2F',
 	lightGray: '#9a9a9a',
+	pg12: '12px',
 	pg8: '8px',
 	pg4: '4px'
 };
@@ -45,20 +46,27 @@ const lightTheme = {
 	darkGrayHover: '#dadada',
 	shadowGray: '#e2e2e2',
 	lightGray: '#9a9a9a',
+	pg12: '12px',
 	pg8: '8px',
 	pg4: '4px'
 }
 
 const App = ({ Component, err, pageProps, router }) => {
 	const { title, description, color } = pageProps;
+	const user = {
+		id: 3,
+		photo_50: 'favicon.png',
+		name: 'Gleb',
+		balance: 300
+	};
 
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyle />
 			<MainHead {...{ title, description }} />
-			<Header {...{ color }} />
+			<Header {...{ color, user }} />
 			<Subheader />
-			<Component {...pageProps}{...router} />
+			<Component {...pageProps}{...router} user={user} />
 			<Notifications />
 		</ThemeProvider>
 	);
