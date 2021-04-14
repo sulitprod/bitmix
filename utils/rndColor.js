@@ -1,5 +1,7 @@
 import random from 'random';
 
-export default function randomColor() {
+const randomColor = () => {
 	return `hsl(${random.int(0, 359)}, 100%, 75%)`;
 }
+
+export default randomColor;

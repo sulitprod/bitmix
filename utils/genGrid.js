@@ -1,4 +1,4 @@
-export default function generateGrid(players, charsCount) {
+const generateGrid = (players, charsCount) => {
 	charsCount = charsCount || 1443;
 
 	const charsAll = [];
@@ -25,3 +25,5 @@ export default function generateGrid(players, charsCount) {
  
 	return charsAll;
 }
+
+export default generateGrid;

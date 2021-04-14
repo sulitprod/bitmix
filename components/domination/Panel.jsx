@@ -62,27 +62,30 @@ const Panel = ({ user, updateUserBits, domination }) => {
 
 		if (isNaN(newValue)) newValue = inputValue;
 		if (newValue > user.balance) newValue = user.balance;
-		setInputValue(newValue);
+		setInputValue(newValue || '');
 		updateUserBits(newValue);
 	}
 	const changeValue = (handler) => {
-		let newValue = handler(
+		let newValue = Number(handler(
 			Number(inputValue),
 			user.balance
-		);
-
+		).toFixed(1));
 		if (newValue > user.balance) newValue = user.balance;
 		setInputValue(newValue);
 		updateUserBits(newValue);
 	}
 	const addValue = async () => {
-		setInProgress(true);
-		// user.id
-		await addBits(random.int(0, 10), Number(inputValue), domination);
-		updateUserBits(0);
-		setInputValue('');
-		setInProgress(false);
-		showNotification('Биты добавлены', 'success');
+		if (Number(inputValue) > 0) {
+			setInProgress(true);
+			// user.id
+			await addBits(random.int(0, 10), Number(inputValue), domination);
+			updateUserBits(0);
+			setInputValue('');
+			setInProgress(false);
+			showNotification('Биты добавлены', 'success');
+		} else {
+			showNotification('Битов должно быть больше 0', 'warning');
+		}
 	}
 
 	return (

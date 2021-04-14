@@ -5,6 +5,8 @@ import { firebaseDB } from '../utils/firebase';
 
 export const addBits = async (playerId, count, domination) => {
 	let newPlayer = null;
+	const sum = domination.players.reduce((all, { count }) => all + count, 0);
+	const packages = { 0: sum * 10 + 1, 1: (sum + count) * 10 };
 
 	for (const player of domination.players) if (player.id === playerId) newPlayer = player;
 	if (!newPlayer) {
@@ -21,7 +23,6 @@ export const addBits = async (playerId, count, domination) => {
 			...domination.players
 		];
 	}
-	const packages = { 0: newPlayer.count * 10 + 1, 1: (newPlayer.count + count) * 10 } 
 	newPlayer.bits.push({ ...packages, 2: count });
 	newPlayer.count += count;
 	domination.cells = genGrid(domination.players);
@@ -82,9 +83,4 @@ export const createDomination = async () => {
 		status: 0,
 		created: firebase.firestore.FieldValue.serverTimestamp()
 	});
-	// const info = await firebaseDB.collection('info').doc('domination').get();
-	// const id = info.data().id;
-	// const game = await info.data().game.get();
-	// console.log(info);
-	// console.log(game);
 }

@@ -17,10 +17,9 @@ const showNotification = (message, type = 'info', options = {}) => {
 		return toast[type](message, { ...defaultOptions, ...options })
 	}
 }
-
-export default showNotification
-
 export const showErrorNotification = (error) => {
 	console.error(error)
 	showNotification(error.message || error, 'error')
 }
+
+export default showNotification;

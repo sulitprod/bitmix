@@ -1,4 +1,4 @@
-export default function declensionText(number, gen, nom, plu) {
+const declensionText = (number, gen, nom, plu) => {
 	number = number.toString();
 
 	return number.match(/(0|[5-9]|1[0-9])$/) 
@@ -7,3 +7,5 @@ export default function declensionText(number, gen, nom, plu) {
 		? nom 
 		: plu
 }
+
+export default declensionText;

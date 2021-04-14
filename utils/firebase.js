@@ -24,7 +24,7 @@ const getCollectionItems = async (collectionRef) => {
 	return snapshots;
 }
 
-module.exports = {
+export {
 	firebase,
 	firebaseApp,
 	firebaseDB,

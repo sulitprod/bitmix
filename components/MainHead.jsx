@@ -23,7 +23,7 @@ const MainHead = ({ title, description, path = '/' }) => {
 			<style jsx>{`
 				@font-face {
 					font-family: 'Pixel';
-					src: url('/pixel.otf');
+					src: url('/Piksieli_Prosto.otf');
 					font-display: fallback;
 				}
 			`}</style>

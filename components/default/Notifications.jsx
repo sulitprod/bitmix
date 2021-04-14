@@ -5,23 +5,19 @@ import styled from 'styled-components';
 
 const Toast = styled(ToastContainer)`
 	.Toastify__toast {
-		border-radius: 0.25em;
-		box-shadow: 0 0.2em 1em rgba(0,0,0, 0.3);
-		padding: 1em;
+		box-shadow: 4px 4px 0 ${({theme}) => theme.darkGray};
+		padding: ${({theme}) => theme.pg8};
 		background-color: #EDF1F7;
-		color: #0A0A0A;
-		font-weight: 500;
+		color: ${({theme}) => theme.white};
 	}
 	.Toastify__toast--success {
-		background-color: #D6FFC8;
+		background-color: #07BC0C;
 	}
 	.Toastify__toast--warning {
-		background-color: #FFFBE6;
-		color: white;
+		background-color: #F1C40F;
 	}
 	.Toastify__toast--error {
 		background-color: #ED7070;
-		color: white;
 	}
 `
 
