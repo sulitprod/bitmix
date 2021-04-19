@@ -45,17 +45,18 @@ const State = styled.div`
 `;
 
 const Timer = ({ domination }) => {
-	let { active, state } = { active: false, state: 'Ожидание игроков' };
+	let state = 'Ожидание игроков';
 	let lines = [];
-	const { players } = domination;
+	const { status } = domination;
 
-	for (let i = 0; i < 30; i++) lines.push(false);
-	if (players.length === 1) state = 'Ожидание игрока';
-	if (players.length >= 2) {
-		lines = [];
-		for (let i = 0; i < 30; i++) lines.push(true);
-		state = '01:00';
-		active = true;
+	switch (status) {
+		case 0:
+			for (let i = 0; i < 30; i++) lines.push(false);
+			break;
+		case 1:
+			state = '1:00';
+			for (let i = 0; i < 30; i++) lines.push(true);
+			break;
 	}
 	
 	return (
@@ -63,7 +64,7 @@ const Timer = ({ domination }) => {
 			<TimeLines className='left'>
 				{lines.map((active, key) => <div className={cn({ active })} key={key} />)}
 			</TimeLines>
-			<State className={cn({ active })}>{state}</State>
+			<State className={cn({ active: status !== 0 })}>{state}</State>
 			<TimeLines className='right'>
 				{lines.map((active, key) => <div className={cn({ active })} key={key} />)}
 			</TimeLines>

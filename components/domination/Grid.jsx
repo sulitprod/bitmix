@@ -1,8 +1,6 @@
 import cn from 'classnames';
-import { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import fillRings from '../../utils/fillRings';
-import shuffleArray from '../../utils/shuffleArr';
+import { shuffleArr } from '../../utils';
 
 const gradient = keyframes`
 	0% {
@@ -50,13 +48,12 @@ const Styled = styled.div`
 
 const Grid = ({ domination }) => {
 	const { cells, players } = domination;
-	const [ grid, setGrid ] = useState(shuffleArray(cells));
-
-	console.log(fillRings(grid));
+	// const ere = shuffleArr(cells);
+	// const [ grid, setGrid ] = useState(cells);
 
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>
-			{grid.map((id, key) => <Bit {...{key, bg: players[id].color || 'transparent'}} />)}
+			{cells.map((id, key) => <Bit {...{key, bg: players.length ? players[id].color : 'transparent'}} />)}
 		</Styled>
 	);
 }

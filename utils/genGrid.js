@@ -1,5 +1,7 @@
+import { CELLS_COUNT } from '../constant';
+
 const generateGrid = (players, charsCount) => {
-	charsCount = charsCount || 1443;
+	charsCount = charsCount || CELLS_COUNT;
 
 	const charsAll = [];
 

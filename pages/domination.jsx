@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCollection, useDocumentData } from 'react-firebase-hooks/firestore';
+import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 import Grid from '../components/domination/Grid';
 import Panel from '../components/domination/Panel';
@@ -11,15 +11,15 @@ import { Info, Content } from '../components/Styled';
 
 import { declText } from '../utils';
 import { firebaseDB } from '../utils/firebase';
-import { getDomination } from '../hooks/domination';
+import { getCurrentDomination } from '../hooks/domination';
 
 const Domination = ({ title, user, startDomination }) => {
-	const [userBits, updateUserBits] = useState(0);
 	const [getDomination, loading, error] = useDocumentData(
 		firebaseDB.collection('current').doc('domination'),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
 	const domination = getDomination || startDomination;
+	const [userBits, updateUserBits] = useState(0);
 
 	return (
 		<main>
@@ -50,7 +50,7 @@ const Domination = ({ title, user, startDomination }) => {
 export default Domination;
 
 export const getStaticProps = async () => {
-	const startDomination = await getDomination();
+	const startDomination = await getCurrentDomination();
 	const props = {
 		title: 'Доминация',
 		startDomination

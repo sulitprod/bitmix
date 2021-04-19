@@ -1,0 +1,7 @@
+const DEFAULT_PORT = 3000;
+const CELLS_COUNT = 1443;
+
+export {
+	DEFAULT_PORT,
+	CELLS_COUNT
+}

@@ -6,7 +6,7 @@ import Button from '../default/Button';
 import Icon from '../default/Icon';
 import Input from '../default/Input';
 
-import showNotification from '../../utils/showNotifications';
+import { showNotification } from '../../utils';
 import { addBits } from '../../hooks/domination';
 
 const BUTTONS = [
@@ -66,10 +66,12 @@ const Panel = ({ user, updateUserBits, domination }) => {
 		updateUserBits(newValue);
 	}
 	const changeValue = (handler) => {
-		let newValue = Number(handler(
+		let newValue = handler(
 			Number(inputValue),
 			user.balance
-		).toFixed(1));
+		);
+
+		if (newValue) newValue = Number(newValue.toFixed(1));
 		if (newValue > user.balance) newValue = user.balance;
 		setInputValue(newValue);
 		updateUserBits(newValue);

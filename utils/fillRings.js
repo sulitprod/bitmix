@@ -1,3 +1,5 @@
+import { CELLS_COUNT } from '../constant';
+
 const addRing = (array, keys, verticalLen, colored, rings) => {
 	const newKeys = [];
 
@@ -16,7 +18,7 @@ const addRing = (array, keys, verticalLen, colored, rings) => {
 	return [...rings, keys];
 }
 const fillRings = (array) => {
-	const start = (1443 - 1) / 2;
+	const start = (CELLS_COUNT - 1) / 2;
 	const verticalLen = 13;
 	const rings = [];
 
