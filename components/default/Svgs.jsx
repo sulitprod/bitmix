@@ -9,6 +9,7 @@ import packageTail2 from '../../public/svg/packageTail2.svg';
 import add from '../../public/svg/add.svg';
 import load from '../../public/svg/load.svg';
 import hatching from '../../public/svg/hatching.svg';
+import warning from '../../public/svg/warning.svg';
 
 export default {
 	trash, 
@@ -21,5 +22,6 @@ export default {
 	packageTail2,
 	add,
 	load,
-	hatching
+	hatching,
+	warning
 }

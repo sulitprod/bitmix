@@ -20,9 +20,20 @@ const GlobalStyle = createGlobalStyle`
 		position: relative;
 		text-decoration: none;
 	}
-	body {
-		background: ${({theme}) => theme.bodyBackground};
-		overflow-y: scroll;
+	html {
+		height: 100%;
+
+		> body {
+			background: ${({theme}) => theme.bodyBackground};
+			overflow-y: scroll;
+			height: 100%;
+
+			> #__next {
+				height: 100%;
+				display: flex;
+    			flex-direction: column;
+			}
+		}
 	}
 `;
 const theme = {

@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
-const firebaseConfig = {
+const config = {
 	apiKey: 'AIzaSyCF4e-H1moR8K8xxmFvyfn-bSdB417ZmHE',
 	authDomain: 'bitmix-53815.firebaseapp.com',
 	projectId: 'bitmix-53815',
@@ -11,7 +11,7 @@ const firebaseConfig = {
 	appId: '1:1027682473725:web:0dcbe629ee21bda792d094',
 	databaseURL: 'https://bitmix-53815-default-rtdb.firebaseio.com',
 }
-const firebaseApp = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+const firebaseApp = !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
 const firebaseDB = firebaseApp.firestore();
 
 const docWithId = (doc) => ({ id: doc.id, ...doc.data() });

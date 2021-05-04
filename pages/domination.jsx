@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDocumentData } from 'react-firebase-hooks/firestore';
 
 import Grid from '../components/domination/Grid';
@@ -9,47 +9,90 @@ import Actions from '../components/domination/Actions';
 import Timer from '../components/domination/Timer';
 import { Info, Content } from '../components/Styled';
 
-import { declText } from '../utils';
+import { declText, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 import { getCurrentDomination } from '../hooks/domination';
+import { TIMES } from '../constant';
+
+import styled from 'styled-components';
+import Icon from '../components/default/Icon';
+
+const Warning = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: ${({theme}) => theme.lightGray};
+
+	> * {
+		padding: ${({theme}) => theme.pg8};
+	}
+`;
+const StyledIcon = styled(Icon)`
+	fill: ${({theme}) => theme.lightGray};
+`;
+const Main = styled.main`
+	height: 100%;
+`;
 
 const Domination = ({ title, user, startDomination }) => {
-	const [getDomination, loading, error] = useDocumentData(
+	const [ getDomination, loading, error ] = useDocumentData(
 		firebaseDB.collection('current').doc('domination'),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
 	const domination = getDomination || startDomination;
-	const [userBits, updateUserBits] = useState(0);
+	const { id, players, status, started } = domination;
+	const [ userBits, updateUserBits ] = useState(0);
+	const computedRemaining = () => {
+		let remaining = 0;
+
+		if (status !== 0) {
+			remaining = TIMES.domination[status] - (Times(2) - Times(2, started)) / 1000;
+
+			if (remaining < 0) remaining = 0;
+		}
+
+		return remaining;
+	};
+	const [ remaining, setRemaining ] = useState(computedRemaining());
+
+	useEffect(() => {
+		const interval = setInterval(() => setRemaining(computedRemaining()), 1000);
+		
+		return () => clearInterval(interval)
+	}, [status]);
 
 	return (
-		<main>
+		<Main>
 			{ domination ? 
 			<>
 				<Info>
 					<div className="title">
 						<p className="name">{title}</p>
 						<p>•</p>
-						<p>Игра #{domination.id}</p>
+						<p>Игра #{id}</p>
 					</div>
-					<div>{`${domination.players.length} ${declText(domination.players.length, 'участников', 'участник', 'участника')}`}</div>
+					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
 				</Info>
 				<Content>
 					<Players domination={domination} user={user} userBits={userBits} />
-					<Timer domination={domination} />
-					<Panel domination={domination} user={user} updateUserBits={updateUserBits} />
-					<Grid domination={domination} />
+					<Timer domination={domination} remaining={remaining} />
+					<Panel domination={domination} user={user} updateUserBits={updateUserBits} remaining={remaining} />
+					<Grid domination={domination} remaining={remaining} />
 					<FooterPanel domination={domination} />
 					<Actions domination={domination} />
 				</Content>
 			</> :
-			<div>Ошибка загрузки игры</div> }
-		</main>
+			<Warning>
+				<StyledIcon src='warning' width={64} />
+				<p>Ошибка загрузки игры</p>
+			</Warning> }
+		</Main>
 	);
 }
- 
-export default Domination;
 
-export const getStaticProps = async () => {
+const getStaticProps = async () => {
 	const startDomination = await getCurrentDomination();
 	const props = {
 		title: 'Доминация',
@@ -58,3 +101,6 @@ export const getStaticProps = async () => {
 
 	return { props }
 }
+
+export default Domination;
+export { getStaticProps };

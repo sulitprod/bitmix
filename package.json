@@ -7,16 +7,18 @@
 	"scripts": {
 		"dev": "node -r esm server.js",
 		"build": "next build",
-		"start": "NODE_ENV=production node -r esm server.js"
+		"start": "cross-env NODE_ENV=production node -r esm server.js"
 	},
 	"dependencies": {
 		"@svgr/webpack": "^5.5.0",
 		"autoprefixer": "^9.6.1",
 		"classnames": "^2.3.1",
+		"cross-env": "^7.0.3",
 		"esm": "^3.2.25",
 		"express": "^4.17.1",
 		"firebase": "^7.24.0",
 		"md5": "^2.3.0",
+		"moment": "^2.29.1",
 		"next": "^10.1.3",
 		"nodemon": "^2.0.6",
 		"random": "^2.2.0",
@@ -26,6 +28,7 @@
 		"react-firebase-hooks": "^2.2.0",
 		"react-modal": "^3.13.1",
 		"react-toastify": "^6.0.8",
+		"socket.io": "^4.0.1",
 		"styled-components": "^5.2.3",
 		"underscore": "^1.12.1"
 	},

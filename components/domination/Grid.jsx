@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { shuffleArr } from '../../utils';
 
@@ -46,14 +47,27 @@ const Styled = styled.div`
 	}
 `;
 
-const Grid = ({ domination }) => {
-	const { cells, players } = domination;
-	// const ere = shuffleArr(cells);
-	// const [ grid, setGrid ] = useState(cells);
+const Grid = ({ domination, remaining }) => {
+	const { cells, players, status, randomCells } = domination;
+	const startGrid = status === 0 || status === 1 ? cells : status === 2 ? randomCells[0] : randomCells[19];
+	const [ grid, setGrid ] = useState(startGrid.split(':'));
+	const [ id, setId ] = useState(0);
+
+	useEffect(() => {
+		if (status === 2 && id !== 19) {
+			const interval = setTimeout(() => {
+				setId(id + 1);
+				// console.log(id);
+				setGrid(randomCells[id].split(':'))
+			}, 500);
+			
+			return () => clearTimeout(interval)
+		}
+	}, [grid]);
 
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>
-			{cells.map((id, key) => <Bit {...{key, bg: players.length ? players[id].color : 'transparent'}} />)}
+			{grid.map((id, key) => <Bit {...{key, bg: players.length ? players[id].color : 'transparent'}} />)}
 		</Styled>
 	);
 }

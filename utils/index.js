@@ -7,6 +7,7 @@ import percent from './percent';
 import fillRings from './fillRings';
 import shuffleArr from './shuffleArr';
 import showNotification from './showNotification';
+import Times from './times';
 
 export {
 	isClient,
@@ -17,5 +18,6 @@ export {
 	percent,
 	fillRings,
 	shuffleArr,
-	showNotification
+	showNotification,
+	Times
 }
