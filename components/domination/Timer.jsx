@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { TIMES } from '../../constant';
 import { useEffect, useState } from 'react';
 import { Times } from '../../utils';
+import Icon from '../default/Icon';
 
 const StyledTimer = styled.div`
 	height: 40px;
@@ -47,11 +48,8 @@ const State = styled.div`
 	}
 `;
 
-const Lines = ({ time, className, status }) => {
-	const defaultCount = 30;
+const Lines = ({ count, defaultCount, className }) => {
 	const lines = [];
-	const startTime = TIMES.domination[status];
-	const count = Math.ceil(defaultCount / startTime * (time > 0 ? time : 0)) || 0;
 
 	for (let i = 0; i < defaultCount - count; i++) lines.push(false);
 	for (let i = 0; i < count; i++) lines.push(true);
@@ -63,44 +61,23 @@ const Lines = ({ time, className, status }) => {
 	);
 }
 
-const Timer = ({ domination, remaining }) => {
-	const [ state, setState ] = useState('');
-	const [ time, setTime ] = useState(0);
-	const { status, started } = domination;
-	let interval;
-
-	const changeTime = (state, add) => {
-		const diff = (Times(2) - Times(2, started)) / 1000 - add;
-
-		if (state) setState(Times(0, TIMES.domination[status] - diff));
-		setTime(TIMES.domination[status] - diff);
-	};
-
-	useEffect(() => {
-		switch (status) {
-			case 0:
-				setState('Ожидание игроков');
-				break;
-			case 1:
-				changeTime(true, 0);
-				interval = setInterval(() => changeTime(true, 0), 1000);
-				return () => clearInterval(interval);
-			case 2:
-				setState('Определение победителя');
-				changeTime(false, TIMES.domination[1]);
-				interval = setInterval(() => changeTime(false, TIMES.domination[1]), 1000);
-				return () => clearInterval(interval);
-			case 3:
-				setState('Победитель');
-				break;
-		}
-	}, [status]);
+const Timer = ({ status, remaining }) => {
+	const statusText = [
+		'Ожидание игроков',
+		Times(0, remaining),
+		'Определение победителя',
+		'Победитель'
+	];
+	const defaultCount = 30;
+	const count = TIMES.domination[status] ? Math.floor(defaultCount / TIMES.domination[status] * remaining) : 0;
 	
 	return (
 		<StyledTimer>
-			<Lines {...{ time, status, className: 'left'}} />
-			<State className={cn({ active: status !== 0 })}>{state}</State>
-			<Lines {...{ time, status, className: 'right'}} />
+			<Lines {...{ count, defaultCount, className: 'left'}} />
+			<State className={cn({ active: status !== 0 })}>{
+				(status !== 0 && count === 0) ? <Icon src='load' /> : statusText[status]
+			}</State>
+			<Lines {...{ count, defaultCount, className: 'right'}} />
 		</StyledTimer>
 	);
 }

@@ -2,9 +2,10 @@ import hash from 'md5';
 import rs from 'randomstring';
 import random from 'random';
 import 'firebase/firestore';
-import { genGrid, rndColor, shuffleArr, Times } from '../utils';
+import { genGrid, rndColor, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 import { CELLS_COUNT, TIMES } from '../constant';
+import { shuffle } from 'underscore';
 
 export const addBits = async (playerId, count) => {
 	const domination = await getCurrentDomination();
@@ -54,36 +55,36 @@ export const addBits = async (playerId, count) => {
 	// await firebaseDB.collection('current/domination/bets').add(bet);
 
 	await firebaseDB.collection('current').doc('domination').update(domination);
-	if (domination.status === 0 && domination.players.length >= 2) {
-		changeStatus(1);
-		setTimeout(() => changeStatus(2), TIMES.domination[1] * 1000);
-	}
+	if (domination.status === 0 && domination.players.length >= 2) changeStatus(1);
 }
 
-const randomCells = (domination, id) => {
-	const { cells, players } = domination;
+const randomCells = (cells, winner) => {
+	const { player } = winner;
 	const newCells = [];
 	const gridCenter = (CELLS_COUNT - 1) / 2;
 	const loopCount = 20;
 
-	for (let i = 0; i < loopCount; i++) newCells.push(shuffleArr(cells.split(':')));
-	for (const r in newCells[loopCount - 1]) {
-		if (newCells[loopCount - 1][r] === id) {
-			newCells[loopCount - 1][r] = newCells[loopCount - 1][gridCenter];
-		}
+	for (let i = 0; i < loopCount; i++) newCells.push(shuffle(cells.split(':')));
+
+	const lastArray = newCells[loopCount - 1];
+
+	for (const r in lastArray) if (lastArray[r] === player) {
+		lastArray[r] = lastArray[gridCenter];
+		break;
 	}
-	newCells[loopCount - 1][gridCenter] = id;
+
+	lastArray[gridCenter] = player;
 
 	return newCells.map((arr) => arr.join(':'));
 }
 
-const setWinner = (domination) => {
-	const sum = domination.players.reduce((all, { count }) => all + count, 0);
-	const bit = Math.ceil(domination.float * sum * 10);
+const setWinner = (float, players) => {
+	const sum = players.reduce((all, { count }) => all + count, 0);
+	const bit = Math.ceil(float * sum * 10);
 	let player = null;
 
-	for (const pl in domination.players) {
-		const plr = domination.players[pl];
+	for (const pl in players) {
+		const plr = players[pl];
 		for (const pk in plr.bits) {
 			const pkg = plr.bits[pk];
 			if (pkg['0'] <= bit && pkg['1'] >= bit) {
@@ -98,24 +99,28 @@ const setWinner = (domination) => {
 
 export const changeStatus = async (status) => {
 	const domination = await getCurrentDomination();
+	const { cells, float, players } = domination;
+	const newValues = {
+		started: Times(1),
+		status
+	};
 
 	switch (status) {
 		case 1:
-			domination.started = Times(1);
-			domination.status = 1;
+			setTimeout(() => changeStatus(status + 1), TIMES.domination[status] * 1000);
 			break;
 		case 2:
-			domination.winner = setWinner(domination);
-			domination.randomCells = randomCells(domination, domination.winner.player);
-			domination.started = Times(1);
-			domination.status = 2;
+			const winner = setWinner(float, players);
+
+			newValues.winner = winner;
+			newValues.randomCells = randomCells(cells, winner);
+			setTimeout(() => changeStatus(status + 1), TIMES.domination[status] * 1000);
 			break;
 		case 3:
-			domination.started = Times(1);
-			domination.status = 3;
+			// setTimeout(() => changeStatus(0), TIMES.domination[status] * 1000);
 			break;
 	}
-	await firebaseDB.collection('current').doc('domination').update(domination);
+	await firebaseDB.collection('current').doc('domination').update({ ...domination, ...newValues });
 }
 
 const setDomination = async (id) => {

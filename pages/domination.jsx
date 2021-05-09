@@ -45,22 +45,21 @@ const Domination = ({ title, user, startDomination }) => {
 	const { id, players, status, started } = domination;
 	const [ userBits, updateUserBits ] = useState(0);
 	const computedRemaining = () => {
-		let remaining = 0;
+		const remaining = TIMES.domination[status] - (Times(2) - Times(2, started)) / 1000;
 
-		if (status !== 0) {
-			remaining = TIMES.domination[status] - (Times(2) - Times(2, started)) / 1000;
-
-			if (remaining < 0) remaining = 0;
-		}
-
-		return remaining;
+		return remaining < 0 ? 0 : remaining;
 	};
 	const [ remaining, setRemaining ] = useState(computedRemaining());
 
 	useEffect(() => {
-		const interval = setInterval(() => setRemaining(computedRemaining()), 1000);
-		
-		return () => clearInterval(interval)
+		const interval = setInterval(() => {
+			const current = computedRemaining();
+
+			setRemaining(current);
+			if (current === 0) clearInterval(interval);
+		}, 500);
+
+		return () => clearInterval(interval);
 	}, [status]);
 
 	return (
@@ -77,7 +76,7 @@ const Domination = ({ title, user, startDomination }) => {
 				</Info>
 				<Content>
 					<Players domination={domination} user={user} userBits={userBits} />
-					<Timer domination={domination} remaining={remaining} />
+					<Timer {...{ status, remaining }} />
 					<Panel domination={domination} user={user} updateUserBits={updateUserBits} remaining={remaining} />
 					<Grid domination={domination} remaining={remaining} />
 					<FooterPanel domination={domination} />

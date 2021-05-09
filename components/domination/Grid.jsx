@@ -1,7 +1,8 @@
 import cn from 'classnames';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { shuffleArr } from '../../utils';
+import { TIMES } from '../../constant';
+import { fillRings } from '../../utils';
 
 const gradient = keyframes`
 	0% {
@@ -16,6 +17,7 @@ const gradient = keyframes`
 `;
 const Bit = styled.p`
 	background: ${p => p.bg};
+	transition: background .1s ease;
 `;
 const Styled = styled.div`
 	width: 1000px;
@@ -48,22 +50,30 @@ const Styled = styled.div`
 `;
 
 const Grid = ({ domination, remaining }) => {
-	const { cells, players, status, randomCells } = domination;
-	const startGrid = status === 0 || status === 1 ? cells : status === 2 ? randomCells[0] : randomCells[19];
-	const [ grid, setGrid ] = useState(startGrid.split(':'));
+	const { cells, players, status, randomCells, winner } = domination;
+	const currentGrid = () => {
+		let current = cells;
+
+		if (status === 2) {
+			const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCells.length)) - 1;
+
+			current = randomCells[id];
+		}
+		if (status === 3) current = randomCells[randomCells.length - 1];
+
+		return current.split(':');
+	};
+	const [ grid, setGrid ] = useState(currentGrid());
 	const [ id, setId ] = useState(0);
+	const rings = fillRings(grid);
 
 	useEffect(() => {
-		if (status === 2 && id !== 19) {
-			const interval = setTimeout(() => {
-				setId(id + 1);
-				// console.log(id);
-				setGrid(randomCells[id].split(':'))
-			}, 500);
-			
-			return () => clearTimeout(interval)
+		if (status === 3 && id <= rings.length - 1) {
+			for (const i of rings[id]) grid[i] = winner.player;
+			setGrid(grid);
+			setId(id + 1);
 		}
-	}, [grid]);
+	}, [status, id]);
 
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>

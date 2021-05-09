@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import Button from '../default/Button';
@@ -6,7 +6,7 @@ import Icon from '../default/Icon';
 import Input from '../default/Input';
 
 import { showNotification } from '../../utils';
-import { CELLS_COUNT } from '../../constant';
+import { CELLS_COUNT, TIMES } from '../../constant';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -39,6 +39,7 @@ const StyledDefenition = styled(Styled)`
 const CenterColor = styled.div`
 	background: ${p => p.bg} !important;
 	width: 386px;
+	transition: background .2s ease;
 	flex-shrink: 0;
 `;
 const StyledInput = styled(Input)`
@@ -65,8 +66,8 @@ const AuthText = styled.div`
 `;
 
 const Panel = ({ user, updateUserBits, domination, remaining }) => {
-	const [inputValue, setInputValue] = useState('');
-	const [inProgress, setInProgress] = useState(false);
+	const [ inputValue, setInputValue ] = useState('');
+	const [ inProgress, setInProgress ] = useState(false);
 	const { status, randomCells, players } = domination;
 	const onChange = ({ target }) => {
 		let newValue = Number(target.value);
@@ -134,23 +135,26 @@ const Panel = ({ user, updateUserBits, domination, remaining }) => {
 			<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
 		);
 	} else if (status === 2) {
-		const [ id, setId ] = useState(0);
-
-		useEffect(() => {
-			if (id !== 19) {
-				const interval = setTimeout(() => setId(id + 1), 500);
-				
-				return () => clearTimeout(interval)
-			}
-		}, [id]);
-		console.log(id);
-		console.log(players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]]);
+		const randomCount = randomCells.length;
+		const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1
 		const currentColor = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]].color;
+
 		return (
 			<StyledDefenition>
-				<div></div>
+				<div />
 				<CenterColor bg={currentColor} />
-				<div></div>
+				<div />
+			</StyledDefenition>
+		);
+	} else if (status === 3) {
+		const id = randomCells.length - 1;
+		const currentColor = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]].color;
+
+		return (
+			<StyledDefenition>
+				<div />
+				<CenterColor bg={currentColor} />
+				<div />
 			</StyledDefenition>
 		);
 	}
