@@ -7,7 +7,7 @@ import Players from '../components/domination/Players';
 import FooterPanel from '../components/domination/FooterPanel';
 import Actions from '../components/domination/Actions';
 import Timer from '../components/domination/Timer';
-import { Info, Content } from '../components/Styled';
+import { Info, Content, Separator } from '../components/Styled';
 
 import { declText, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
@@ -36,13 +36,31 @@ const Main = styled.main`
 	height: 100%;
 `;
 
+const lastWinners = [
+	{
+		photo_50: 'favicon.png',
+	},
+	{
+		photo_50: 'favicon.png',
+	},
+	{
+		photo_50: 'favicon.png',
+	},
+	{
+		photo_50: 'favicon.png',
+	},
+	{
+		photo_50: 'favicon.png',
+	},
+];
+
 const Domination = ({ title, user, startDomination }) => {
 	const [ getDomination, loading, error ] = useDocumentData(
 		firebaseDB.collection('current').doc('domination'),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
 	const domination = getDomination || startDomination;
-	const { id, players, status, started } = domination;
+	const { id, players, status, started, actions } = domination;
 	const [ userBits, updateUserBits ] = useState(0);
 	const computedRemaining = () => {
 		const remaining = TIMES.domination[status] - (Times(2) - Times(2, started)) / 1000;
@@ -68,8 +86,8 @@ const Domination = ({ title, user, startDomination }) => {
 			<>
 				<Info>
 					<div className="title">
-						<p className="name">{title}</p>
-						<p>•</p>
+						<p>{title}</p>
+						<Separator />
 						<p>Игра #{id}</p>
 					</div>
 					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
@@ -79,8 +97,8 @@ const Domination = ({ title, user, startDomination }) => {
 					<Timer {...{ status, remaining }} />
 					<Panel domination={domination} user={user} updateUserBits={updateUserBits} remaining={remaining} />
 					<Grid domination={domination} remaining={remaining} />
-					<FooterPanel domination={domination} />
-					<Actions domination={domination} />
+					<FooterPanel {...{ lastWinners, players }} />
+					<Actions {...{ actions }} />
 				</Content>
 			</> :
 			<Warning>

@@ -4,7 +4,7 @@ import styled, { keyframes } from 'styled-components';
 import { TIMES } from '../../constant';
 import { fillRings } from '../../utils';
 
-const gradient = keyframes`
+const gradientKeys = keyframes`
 	0% {
 		background-position: 0% 0%;
 	}
@@ -13,6 +13,14 @@ const gradient = keyframes`
 	}
 	100% {
 		background-position: 0% 0%;
+	}
+`;
+const bitKeys = keyframes`
+	0% {
+		opacity: 0.1;
+	}
+	100% {
+		opacity: 1;
 	}
 `;
 const Bit = styled.p`
@@ -33,12 +41,14 @@ const Styled = styled.div`
 		height: 9px;
 		border-right: 1px solid;
 		border-bottom: 1px solid;
+		animation: ${bitKeys} linear alternate;
+		animation-duration: 1s;
 	}
 	&.stageNo {
-		animation: ${gradient} linear alternate;
+		animation: ${gradientKeys} linear alternate;
 		animation-iteration-count: infinite;
 		animation-duration: 4s;
-		animation-delay: 5s;
+		animation-delay: 3s;
 		background: linear-gradient(
 		-45deg,
 		rgb(58, 58, 58),
@@ -52,28 +62,47 @@ const Styled = styled.div`
 const Grid = ({ domination, remaining }) => {
 	const { cells, players, status, randomCells, winner } = domination;
 	const currentGrid = () => {
-		let current = cells;
-
 		if (status === 2) {
 			const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCells.length)) - 1;
 
-			current = randomCells[id];
+			return randomCells[id].split(':');
 		}
-		if (status === 3) current = randomCells[randomCells.length - 1];
+		if (status === 3) return randomCells[randomCells.length - 1].split(':');
 
-		return current.split(':');
+		return cells.split(':');
 	};
 	const [ grid, setGrid ] = useState(currentGrid());
 	const [ id, setId ] = useState(0);
-	const rings = fillRings(grid);
+	const rings = (status === 3) ? fillRings(grid) : null;
+	const addRing = () => {
+		for (const i of rings[id]) grid[i] = winner.player;
+		setGrid(grid);
+		setId(id + 1);
+	}
 
 	useEffect(() => {
-		if (status === 3 && id <= rings.length - 1) {
-			for (const i of rings[id]) grid[i] = winner.player;
-			setGrid(grid);
-			setId(id + 1);
+		setGrid(currentGrid());
+		if (status === 3) {
+			if (!id) addRing(); 
+			else setId(0);
 		}
-	}, [status, id]);
+	}, [status, cells]);
+
+	useEffect(() => {
+		if (status === 2) setGrid(currentGrid());
+	}, [remaining]);
+
+	// if (status === 3 && id <= rings.length - 1) addRing();
+
+	// useEffect(() => {
+		// setGrid(currentGrid());
+		// setId(0);
+		// if (status === 3) addRing();
+	// }, [status]);
+	
+	useEffect(() => {
+		if (status === 3 && id <= rings.length - 1) addRing();
+	}, [id]);
 
 	return (
 		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>

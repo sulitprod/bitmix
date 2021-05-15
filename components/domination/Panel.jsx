@@ -7,6 +7,9 @@ import Input from '../default/Input';
 
 import { showNotification } from '../../utils';
 import { CELLS_COUNT, TIMES } from '../../constant';
+import Photo from '../default/Photo';
+import Bits from '../Bits';
+import { Package } from '../Styled';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -19,9 +22,14 @@ const BUTTONS = [
 	['Всё', (_, balance) => balance]
 ];
 
+const Name = styled.p`
+	line-height: 16px;
+	padding-bottom: ${({theme}) => theme.pg8};
+`;
 const Styled = styled.div`
 	display: flex;
 	width: 998px;
+	align-items: center;
 
 	> * {
 		width: 100%;
@@ -32,15 +40,32 @@ const Styled = styled.div`
 `;
 const StyledDefenition = styled(Styled)`
 	> div {
-		height: 40px;
+		height: 32px;
 		background: ${({theme}) => theme.shadowGray};
 	}
 `;
 const CenterColor = styled.div`
-	background: ${p => p.bg} !important;
-	width: 386px;
-	transition: background .2s ease;
+	transition: background .2s, width .5s ease;
 	flex-shrink: 0;
+	background: ${p => p.bg} !important;
+	width: 40px;
+	height: 40px !important;
+
+	&.winner {
+		width: 380px !important;
+		display: flex;
+		overflow: hidden;
+		justify-content: space-between;
+		background: ${({theme}) => theme.bodyBackground} !important;
+	}
+`;
+const Sum = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+`;
+const StyledBits = styled(Bits)`
+	padding-bottom: ${({theme}) => theme.pg4};
 `;
 const StyledInput = styled(Input)`
 	line-height: 24px;
@@ -65,10 +90,9 @@ const AuthText = styled.div`
 	color: ${({theme}) => theme.lightGray};
 `;
 
-const Panel = ({ user, updateUserBits, domination, remaining }) => {
+const AwaitStage = ({ user, updateUserBits }) => {
 	const [ inputValue, setInputValue ] = useState('');
 	const [ inProgress, setInProgress ] = useState(false);
-	const { status, randomCells, players } = domination;
 	const onChange = ({ target }) => {
 		let newValue = Number(target.value);
 
@@ -105,59 +129,76 @@ const Panel = ({ user, updateUserBits, domination, remaining }) => {
 		}
 	}
 
-	if (status === 0 || status === 1) {
-		return (
-			user ? <Styled>
-				{BUTTONS.map(([value, handler], key) => (
-					<StyledButton
-						className='values'
-						key={key}
-						type='main'
-						value={value}
-						onClick={() => changeValue(handler)}
-					/>
-				))}
-				<StyledInput
-					placeholder='Количество'
-					value={inputValue}
-					onChange={onChange}
-					disabled={inProgress}
-					max={user.balance}
+	return (
+		user ? <Styled>
+			{BUTTONS.map(([value, handler], key) => (
+				<StyledButton
+					className='values'
+					key={key}
+					type='main'
+					value={value}
+					onClick={() => changeValue(handler)}
 				/>
-				<StyledButton 
-					className='add' 
-					type='main' 
-					value='Добавить биты' 
-					loading={inProgress}
-					onClick={addValue} 
-				/>
-			</Styled> :
-			<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
-		);
-	} else if (status === 2) {
-		const randomCount = randomCells.length;
-		const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1
-		const currentColor = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]].color;
+			))}
+			<StyledInput
+				placeholder='Количество'
+				value={inputValue}
+				onChange={onChange}
+				disabled={inProgress}
+				max={user.balance}
+			/>
+			<StyledButton 
+				className='add' 
+				type='main' 
+				value='Добавить биты' 
+				loading={inProgress}
+				onClick={addValue} 
+			/>
+		</Styled> :
+		<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
+	);
+}
+const WinnerStage = ({ domination, remaining }) => {
+	const { status, randomCells, players } = domination;
+	const randomCount = randomCells.length;
+	const id = status === 2 ? 
+		Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1 : 
+		randomCells.length - 1;
+	const current = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]];
+	const { color, name, photo_50, count } = current;
+	const sum = players.reduce((all, { count }) => all + count, 0);
 
-		return (
-			<StyledDefenition>
-				<div />
-				<CenterColor bg={currentColor} />
-				<div />
-			</StyledDefenition>
-		);
-	} else if (status === 3) {
-		const id = randomCells.length - 1;
-		const currentColor = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]].color;
+	return (
+		<StyledDefenition>
+			<div />
+			<CenterColor bg={color} />
+			{ status === 2 ? 
+				<CenterColor>
+					<Photo src={photo_50} />
+				</CenterColor> :
+				<CenterColor className='winner'>
+					<Button padding={0} left={<Photo src={photo_50} />} align='left'>
+						<Name>{name}</Name>
+						<Bits value={count} />
+					</Button>
+					<Sum>
+						<StyledBits value={sum} />
+						<Package color={color} packages={[0, 100]} />
+					</Sum>
+				</CenterColor>
+			}
+			<CenterColor bg={color} />
+			<div />
+		</StyledDefenition>
+	);
+}
+const Panel = ({ user, updateUserBits, domination, remaining }) => {
+	const { status } = domination;
 
-		return (
-			<StyledDefenition>
-				<div />
-				<CenterColor bg={currentColor} />
-				<div />
-			</StyledDefenition>
-		);
-	}
+	return (
+		status === 0 || status === 1 ? <AwaitStage {...{ user, updateUserBits }} /> :
+		status === 2 || status === 3 ? <WinnerStage {...{ domination, remaining }} /> : ''
+	)
 }
 
 export default Panel;

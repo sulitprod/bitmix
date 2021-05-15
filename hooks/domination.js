@@ -9,9 +9,10 @@ import { shuffle } from 'underscore';
 
 export const addBits = async (playerId, count) => {
 	const domination = await getCurrentDomination();
-	const { id, players } = domination;
+	const { id, players, status } = domination;
 	const sum = players.reduce((all, { count }) => all + count, 0);
 
+	if (status !== 0 && status !== 1) return;
 
 	let newPlayer = null;
 	const packages = { 0: sum * 10 + 1, 1: (sum + count) * 10 };
@@ -62,7 +63,7 @@ const randomCells = (cells, winner) => {
 	const { player } = winner;
 	const newCells = [];
 	const gridCenter = (CELLS_COUNT - 1) / 2;
-	const loopCount = 20;
+	const loopCount = TIMES.domination[2] * 2;
 
 	for (let i = 0; i < loopCount; i++) newCells.push(shuffle(cells.split(':')));
 

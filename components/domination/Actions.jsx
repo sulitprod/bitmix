@@ -7,12 +7,13 @@ import Icon from '../default/Icon';
 import Photo from '../default/Photo';
 
 import { declText } from '../../utils';
+import { Package, Separator } from '../Styled';
 
 const ColoredIcon = styled(Icon)`
 	&& {
 		position: absolute;
-		left: 3px;
-		top: 3px;
+		left: 1px;
+		top: 6px;
 		fill: ${p => p.bg};
 	}
 `;
@@ -20,7 +21,6 @@ const StyledIcon = styled(Icon)`
 	&& {
 		fill: ${({theme}) => theme.darkGray};
 		z-index: 1;
-		top: 2px;
 	}
 `;
 const NoActionsText = styled.div`
@@ -87,14 +87,6 @@ const StyledGroupedAction = styled.div`
 		}
 	}
 `;
-const StyledPackage = styled.div`
-	padding-left: ${({theme}) => theme.pg8};
-			
-	> .mainText {
-		background: ${({theme}) => theme.darkGray};
-		padding: ${({theme}) => theme.pg8};
-	}
-`
 const StyledActions = styled.div`
 	background: ${({theme}) => theme.shadowGray};
 	display: flex;
@@ -113,9 +105,6 @@ const StyledActions = styled.div`
 			align-items: center;
 			display: flex;
 
-			> .separator {
-				padding: 0 ${({theme}) => theme.pg8};
-			}
 			> .mainText {
 				font-weight: 600;
 			}
@@ -125,14 +114,6 @@ const StyledActions = styled.div`
 		}
 	}
 `;
-
-const Package = ({ color, packages }) => (
-	<StyledPackage>
-			<StyledIcon src='packageTail' width={30} />
-			<ColoredIcon src='packageTail2' width={30} bg={color} />
-			<div className='mainText'>{`${packages[0]} - ${packages[1]}`}</div>
-	</StyledPackage>
-)
 
 const Action = ({ photo_50, count, name, packages, color }) => (
 	<StyledAction>
@@ -165,9 +146,8 @@ const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
 	</StyledGroupedAction>
 );
 
-const Actions = ({ domination }) => {
+const Actions = ({ actions }) => {
 	const [ sortView, changeSortView ] = useState(true);
-	const { actions } = domination;
 	const sortedActions = actions.slice(0).reverse();
 	let groupedActions = {};
 
@@ -189,7 +169,7 @@ const Actions = ({ domination }) => {
 			<div className='top'>
 				<div>
 					<p className='mainText'>История</p>
-					<p className='separator'>•</p>
+					<Separator />
 					<p>{
 					sortedActions.length ? 
 					`${sortedActions.length} ${declText(sortedActions.length, 'действий', 'действие', 'действия')}` :
@@ -202,14 +182,10 @@ const Actions = ({ domination }) => {
 				</div>
 			</div>
 			<div className='content'>
-				{sortedActions.length ? 
-				sortView ? sortedActions.map((action, key) => (
-					<Action key={key} {...action} />
-				)) :
-				groupedActions.map((action, key) => (
-					<GroupedActions key={key} {...action} />
-				)) :
-				<NoActionsText>В игре пока не совершено действий</NoActionsText>}
+				{ sortedActions.length ? 
+				sortView ? sortedActions.map((action, key) => <Action key={key} {...action} />) :
+				groupedActions.map((action, key) => <GroupedActions key={key} {...action} />) :
+				<NoActionsText>В игре пока не совершено действий</NoActionsText> }
 			</div>
 		</StyledActions>
 	);

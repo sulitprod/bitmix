@@ -15,22 +15,23 @@ const TimeLines = styled.div`
 	height: 100%;
 	white-space: nowrap;
 	display: flex;
+	color: ${({theme}) => theme.bodyBackground};
 
 	&.left {
 		flex-direction: row;
 		div + div {
-			margin-left: 2px;
+			border-left: 2px solid;
 		}
 	}
 	&.right {
 		flex-direction: row-reverse;
 		div + div {
-			margin-right: 2px;
+			border-right: 2px solid;
 		}
 	}
 	
 	> div {
-		width: 8px;
+		width: 10px;
 		background: ${({theme}) => theme.gray};
 		&.active {
 			background: ${({theme}) => theme.darkGray};
@@ -44,7 +45,6 @@ const State = styled.div`
 	color: ${({theme}) => theme.lightGray};
 	&.active {
 		color: ${({theme}) => theme.white};
-		font-size: 20px;
 	}
 `;
 
@@ -62,20 +62,24 @@ const Lines = ({ count, defaultCount, className }) => {
 }
 
 const Timer = ({ status, remaining }) => {
+	const active = status !== 0;
+	const defaultCount = 30;
+	const [ syncRemaining, setRem ] = useState(0); 
 	const statusText = [
 		'Ожидание игроков',
-		Times(0, remaining),
+		Times(0, syncRemaining),
 		'Определение победителя',
 		'Победитель'
-	];
-	const defaultCount = 30;
-	const count = TIMES.domination[status] ? Math.floor(defaultCount / TIMES.domination[status] * remaining) : 0;
-	
+	][status];
+	const count = active ? Math.floor(defaultCount / TIMES.domination[status] * syncRemaining) : 0;
+
+	useEffect(() => setRem(remaining), [remaining]);
+
 	return (
 		<StyledTimer>
 			<Lines {...{ count, defaultCount, className: 'left'}} />
-			<State className={cn({ active: status !== 0 })}>{
-				(status !== 0 && count === 0) ? <Icon src='load' /> : statusText[status]
+			<State className={cn({ active })}>{
+				(active && count === 0) ? <Icon src='load' /> : statusText
 			}</State>
 			<Lines {...{ count, defaultCount, className: 'right'}} />
 		</StyledTimer>
