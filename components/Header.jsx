@@ -1,9 +1,10 @@
 import styled from 'styled-components';
+import { useSession, signIn, signOut } from 'next-auth/client';
 
 import Profile from './Profile';
 import Button from './default/Button';
 import Link from './default/Link';
-import Photo from './default/Photo';
+import Icon from './default/Icon';
 
 const Styled = styled.div`
 	align-items: center;
@@ -25,19 +26,23 @@ const Logo = styled.div`
 	text-align: center;
 `;
 
-const Header = ({ color, user }) => (
-	<Styled>
-		<div>
-			<Button href='/leaders' value='Лидеры' />
-		</div>
-		<Link href='/'>
-			<Logo bg={color}>BITMIX</Logo>
-		</Link>
-		{ user ? 
-			<Profile user={user} /> :
-			<Button right={<Photo src='favicon.png' />} align='right' value='Вход' />
-		}
-	</Styled>
-);
+const Header = ({ color }) => {
+	const [ user, loading ] = useSession();
+
+	return (
+		<Styled>
+			<div>
+				<Button href='/leaders' value='Лидеры' />
+			</div>
+			<Link href='/'>
+				<Logo bg={color}>BITMIX</Logo>
+			</Link>
+			{ user ? 
+				<Profile user={user} onClick={signOut} /> :
+				<Button right={<Icon src='login' width={24} padding={8} />} align='right' value='Вход' onClick={() => signIn('vk')} />
+			}
+		</Styled>
+	);
+}
 
 export default Header;

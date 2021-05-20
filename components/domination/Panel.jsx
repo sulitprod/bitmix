@@ -10,6 +10,7 @@ import { CELLS_COUNT, TIMES } from '../../constant';
 import Photo from '../default/Photo';
 import Bits from '../Bits';
 import { Package } from '../Styled';
+import { useSession } from 'next-auth/client';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -91,24 +92,22 @@ const AuthText = styled.div`
 `;
 
 const AwaitStage = ({ user, updateUserBits }) => {
+	const { balance } = user;
 	const [ inputValue, setInputValue ] = useState('');
 	const [ inProgress, setInProgress ] = useState(false);
 	const onChange = ({ target }) => {
 		let newValue = Number(target.value);
 
 		if (isNaN(newValue)) newValue = inputValue;
-		if (newValue > user.balance) newValue = user.balance;
+		if (newValue > balance) newValue = balance;
 		setInputValue(newValue || '');
 		updateUserBits(newValue);
 	}
 	const changeValue = (handler) => {
-		let newValue = handler(
-			Number(inputValue),
-			user.balance
-		);
+		let newValue = handler(Number(inputValue), balance);
 
 		if (newValue) newValue = Number(newValue.toFixed(1));
-		if (newValue > user.balance) newValue = user.balance;
+		if (newValue > balance) newValue = balance;
 		setInputValue(newValue);
 		updateUserBits(newValue);
 	}
@@ -145,7 +144,7 @@ const AwaitStage = ({ user, updateUserBits }) => {
 				value={inputValue}
 				onChange={onChange}
 				disabled={inProgress}
-				max={user.balance}
+				max={balance}
 			/>
 			<StyledButton 
 				className='add' 
@@ -158,8 +157,7 @@ const AwaitStage = ({ user, updateUserBits }) => {
 		<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
 	);
 }
-const WinnerStage = ({ domination, remaining }) => {
-	const { status, randomCells, players } = domination;
+const WinnerStage = ({ status, randomCells, players, remaining }) => {
 	const randomCount = randomCells.length;
 	const id = status === 2 ? 
 		Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1 : 
@@ -192,12 +190,13 @@ const WinnerStage = ({ domination, remaining }) => {
 		</StyledDefenition>
 	);
 }
-const Panel = ({ user, updateUserBits, domination, remaining }) => {
-	const { status } = domination;
+const Panel = ({ updateUserBits, domination, remaining }) => {
+	const [ user, userLoading ] = useSession();
+	const { status, randomCells, players } = domination;
 
 	return (
 		status === 0 || status === 1 ? <AwaitStage {...{ user, updateUserBits }} /> :
-		status === 2 || status === 3 ? <WinnerStage {...{ domination, remaining }} /> : ''
+		status === 2 || status === 3 ? <WinnerStage {...{ status, randomCells, players, remaining }} /> : ''
 	)
 }
 

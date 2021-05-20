@@ -16,6 +16,7 @@ import { TIMES } from '../constant';
 
 import styled from 'styled-components';
 import Icon from '../components/default/Icon';
+import { useSession } from 'next-auth/client';
 
 const Warning = styled.div`
 	display: flex;
@@ -38,23 +39,23 @@ const Main = styled.main`
 
 const lastWinners = [
 	{
-		photo_50: 'favicon.png',
+		photo_50: 'img/favicon.png',
 	},
 	{
-		photo_50: 'favicon.png',
+		photo_50: 'img/favicon.png',
 	},
 	{
-		photo_50: 'favicon.png',
+		photo_50: 'img/favicon.png',
 	},
 	{
-		photo_50: 'favicon.png',
+		photo_50: 'img/favicon.png',
 	},
 	{
-		photo_50: 'favicon.png',
+		photo_50: 'img/favicon.png',
 	},
 ];
 
-const Domination = ({ title, user, startDomination }) => {
+const Domination = ({ title, startDomination }) => {
 	const [ getDomination, loading, error ] = useDocumentData(
 		firebaseDB.collection('current').doc('domination'),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
@@ -93,10 +94,10 @@ const Domination = ({ title, user, startDomination }) => {
 					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
 				</Info>
 				<Content>
-					<Players domination={domination} user={user} userBits={userBits} />
+					<Players {...{ players, userBits }} />
 					<Timer {...{ status, remaining }} />
-					<Panel domination={domination} user={user} updateUserBits={updateUserBits} remaining={remaining} />
-					<Grid domination={domination} remaining={remaining} />
+					<Panel { ...{ domination, updateUserBits, remaining }} />
+					<Grid {...{ domination, remaining }} />
 					<FooterPanel {...{ lastWinners, players }} />
 					<Actions {...{ actions }} />
 				</Content>

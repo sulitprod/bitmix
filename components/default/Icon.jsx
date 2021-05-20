@@ -7,6 +7,7 @@ const Styled = styled.div`
 	line-height: 0;
 	fill: ${({theme}) => theme.white};
 	display: inline-block;
+	padding: ${p => p.padding}px;
 
 	> svg {
 		fill: unset;
@@ -15,14 +16,14 @@ const Styled = styled.div`
 	}
 `;
 
-const Icon = ({ src, width = 16, height, className }) => {
+const Icon = ({ src, width = 16, height, className, padding = 0 }) => {
 	width = typeof width === 'string' ? width : width + 'px';
 	height = height || width;
 
 	const Svg = Svgs[src];
 
 	return (
-		<Styled {...{ width, height, className }}>
+		<Styled {...{ width, height, className, padding }}>
 			<Svg src={src} />
 		</Styled>
 	);

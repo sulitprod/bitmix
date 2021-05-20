@@ -5,20 +5,16 @@ import Button from './default/Button';
 import Photo from './default/Photo';
 
 const Name = styled.p`
-	border-bottom: 1px solid ${({theme}) => theme.gray};
 	line-height: 16px;
-	padding-bottom: ${({theme}) => theme.pg4};
-`;
-const Styled = styled(Bits)`
-	padding-top: ${({theme}) => theme.pg4} !important;
+	padding-bottom: ${({theme}) => theme.pg8};
 `;
 
-const Profile = ({ user: { photo_50, name, balance } }) => {
+const Profile = ({ user: { picture, name, balance }, onClick }) => {
 	return (
 		<div>
-			<Button right={<Photo src={photo_50} />} align='right'>
+			<Button {...{ right: <Photo src={picture} />, align:'right', onClick }}>
 				<Name>{name}</Name>
-				<Styled value={balance} />
+				<Bits value={balance} />
 			</Button>
 		</div>	
 	);

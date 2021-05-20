@@ -1,4 +1,5 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { getSession, Provider } from 'next-auth/client';
 
 import MainHead from '../components/MainHead';
 import Header from '../components/Header';
@@ -63,28 +64,29 @@ const lightTheme = {
 }
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description, color } = pageProps;
-	const user = {
-		id: 3,
-		photo_50: 'favicon.png',
-		name: 'Gleb',
-		balance: 300
-	};
+	const { title, description, color, session } = pageProps;
 
 	return (
 		<ThemeProvider theme={theme}>
-			<GlobalStyle />
-			<MainHead {...{ title, description }} />
-			<Header {...{ color, user }} />
-			<Subheader />
-			<Component {...pageProps}{...router} user={user} />
-			<Notifications />
+			<Provider session={session}>
+				<GlobalStyle />
+				<MainHead {...{ title, description }} />
+				<Header {...{ color }} />
+				<Subheader />
+				<Component {...{ ...pageProps, ...router }} />
+				<Notifications />
+			</Provider>
 		</ThemeProvider>
 	);
 }
 
-App.getInitialProps = async () => {
-	return { pageProps: { color: rndColor() } }
+App.getInitialProps = async ({ req }) => {
+	return { 
+		pageProps: { 
+			color: rndColor(), 
+			session: getSession({ req }) 
+		}
+	}
 }
 
 export default App;

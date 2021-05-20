@@ -4,6 +4,7 @@ import Photo from '../default/Photo';
 import Icon from '../default/Icon';
 
 import { percent } from '../../utils';
+import { useSession } from 'next-auth/client';
 
 const Line = styled.div.attrs(p => ({
 	style: {
@@ -78,8 +79,8 @@ const Player = ({ photo_50, color, sum, count, userBits, currentUser }) => (
 	</StyledPlayer>
 );
 
-const Players = ({ userBits, domination, user }) => {
-	const { players } = domination;
+const Players = ({ userBits, players }) => {
+	const [ user, userLoading ] = useSession();
 	const sum = players.reduce((all, { count }) => all + count, 0);
 	const newSum = sum + userBits;
 	let inGame = false;

@@ -9,6 +9,7 @@ import add from '../../public/svg/add.svg';
 import load from '../../public/svg/load.svg';
 import hatching from '../../public/svg/hatching.svg';
 import warning from '../../public/svg/warning.svg';
+import login from '../../public/svg/login.svg';
 
 export default {
 	trash, 
@@ -21,5 +22,6 @@ export default {
 	add,
 	load,
 	hatching,
-	warning
+	warning,
+	login
 }

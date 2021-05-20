@@ -6,8 +6,11 @@ import { genGrid, rndColor, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 import { CELLS_COUNT, TIMES } from '../constant';
 import { shuffle } from 'underscore';
+import { getSession } from 'next-auth/client';
 
-export const addBits = async (playerId, count) => {
+export const addBits = async (count, req) => {
+	const currentUser = await getSession({ req });
+	const playerId = currentUser.id;
 	const domination = await getCurrentDomination();
 	const { id, players, status } = domination;
 	const sum = players.reduce((all, { count }) => all + count, 0);
@@ -21,8 +24,8 @@ export const addBits = async (playerId, count) => {
 	if (!newPlayer) {
 		newPlayer = {
 			id: playerId,
-			photo_50: 'favicon.png',
-			name: 'Алена',
+			photo_50: currentUser.picture,
+			name: currentUser.name,
 			bits: [],
 			count: 0,
 			color: rndColor()
@@ -39,7 +42,7 @@ export const addBits = async (playerId, count) => {
 		id: newPlayer.id,
 		photo_50: newPlayer.photo_50, 
 		count,
-		name: `${newPlayer.name}-${newPlayer.id}`,
+		name: newPlayer.name,
 		packages, 
 		color: newPlayer.color
 	});

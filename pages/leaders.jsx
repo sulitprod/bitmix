@@ -81,17 +81,17 @@ export async function getServerSideProps() {
 	const props = {
 		info: [
 			{
-				photo_50: 'favicon.png',
+				photo_50: 'img/favicon.png',
 				name: 'Алена',
 				count: 15032
 			},
 			{
-				photo_50: 'favicon.png',
+				photo_50: 'img/favicon.png',
 				name: 'Павел',
 				count: 8062
 			},
 			{
-				photo_50: 'favicon.png',
+				photo_50: 'img/favicon.png',
 				name: 'Супер-убийца',
 				count: 3044
 			}

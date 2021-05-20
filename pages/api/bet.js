@@ -1,17 +1,16 @@
 import { addBits } from '../../hooks/domination';
-import random from 'random';
+import { getSession } from 'next-auth/client';
 
 const handler = async (req, res) => {
+	const user = await getSession({ req });
 	const { method, body } = req;
 
-	if (method === 'POST') {
-		if(['count'].every(key => key in body)) {
-			const { count } = body;
-
-			await addBits(random.int(0, 10), count);
-		}
+	if (method === 'POST' && user && 'count' in body) {
+		const { count } = body;
+		
+		await addBits(count, req);
 	}
-	res.status(200).json({});
+	res.end();
 }
 
 export default handler;
