@@ -9,10 +9,10 @@ const Name = styled.p`
 	padding-bottom: ${({theme}) => theme.pg8};
 `;
 
-const Profile = ({ user: { picture, name, balance }, onClick }) => {
+const Profile = ({ user: { photo_100, name, balance }, onClick }) => {
 	return (
 		<div>
-			<Button {...{ right: <Photo src={picture} />, align:'right', onClick }}>
+			<Button {...{ right: <Photo src={photo_100} />, align:'right', onClick }}>
 				<Name>{name}</Name>
 				<Bits value={balance} />
 			</Button>

@@ -13,7 +13,7 @@ export default NextAuth({
 			const { picture, name, sub } = user;
 
 			return {
-				picture,
+				photo_100: picture,
 				name,
 				id: sub,
 				balance: 300

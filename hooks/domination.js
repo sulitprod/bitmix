@@ -24,7 +24,7 @@ export const addBits = async (count, req) => {
 	if (!newPlayer) {
 		newPlayer = {
 			id: playerId,
-			photo_50: currentUser.picture,
+			photo_100: currentUser.photo_100,
 			name: currentUser.name,
 			bits: [],
 			count: 0,
@@ -40,7 +40,7 @@ export const addBits = async (count, req) => {
 	domination.cells = genGrid(domination.players).join(':');
 	domination.actions.push({
 		id: newPlayer.id,
-		photo_50: newPlayer.photo_50, 
+		photo_100: newPlayer.photo_100, 
 		count,
 		name: newPlayer.name,
 		packages, 

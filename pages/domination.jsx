@@ -39,19 +39,19 @@ const Main = styled.main`
 
 const lastWinners = [
 	{
-		photo_50: 'img/favicon.png',
+		photo_100: 'img/favicon.png',
 	},
 	{
-		photo_50: 'img/favicon.png',
+		photo_100: 'img/favicon.png',
 	},
 	{
-		photo_50: 'img/favicon.png',
+		photo_100: 'img/favicon.png',
 	},
 	{
-		photo_50: 'img/favicon.png',
+		photo_100: 'img/favicon.png',
 	},
 	{
-		photo_50: 'img/favicon.png',
+		photo_100: 'img/favicon.png',
 	},
 ];
 
@@ -62,7 +62,7 @@ const Domination = ({ title, startDomination }) => {
 	);
 	const domination = getDomination || startDomination;
 	const { id, players, status, started, actions } = domination;
-	const [ userBits, updateUserBits ] = useState(0);
+	const [ addingBits, updateAddingBits ] = useState(0);
 	const computedRemaining = () => {
 		const remaining = TIMES.domination[status] - (Times(2) - Times(2, started)) / 1000;
 
@@ -94,9 +94,9 @@ const Domination = ({ title, startDomination }) => {
 					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
 				</Info>
 				<Content>
-					<Players {...{ players, userBits }} />
+					<Players {...{ players, addingBits }} />
 					<Timer {...{ status, remaining }} />
-					<Panel { ...{ domination, updateUserBits, remaining }} />
+					<Panel { ...{ domination, updateAddingBits, remaining }} />
 					<Grid {...{ domination, remaining }} />
 					<FooterPanel {...{ lastWinners, players }} />
 					<Actions {...{ actions }} />

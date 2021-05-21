@@ -45,11 +45,11 @@ const StyledLeader = styled(FlexRow)`
 	}
 `;
 
-const Leader = ({ photo_50, name, count, id }) => (
+const Leader = ({ photo_100, name, count, id }) => (
 	<StyledLeader>
 		<div className="place">{id + 1}</div>
 		<div className="player">
-			<Photo src={photo_50} />
+			<Photo src={photo_100} />
 			<p>{name}</p>
 		</div>
 		<Bits value={count} className="count" />
@@ -81,17 +81,17 @@ export async function getServerSideProps() {
 	const props = {
 		info: [
 			{
-				photo_50: 'img/favicon.png',
+				photo_100: 'img/favicon.png',
 				name: 'Алена',
 				count: 15032
 			},
 			{
-				photo_50: 'img/favicon.png',
+				photo_100: 'img/favicon.png',
 				name: 'Павел',
 				count: 8062
 			},
 			{
-				photo_50: 'img/favicon.png',
+				photo_100: 'img/favicon.png',
 				name: 'Супер-убийца',
 				count: 3044
 			}

@@ -27,7 +27,7 @@ export default function FooterPanel({ lastWinners, players }) {
 	return (
 		<Styled>
 			<LastWinners>
-				{lastWinners.map(({ photo_50 }, key) => <Photo src={photo_50} key={key} />)}
+				{lastWinners.map(({ photo_100 }, key) => <Photo src={photo_100} key={key} />)}
 				<Separator />
 				<p>Последние победители</p>
 			</LastWinners>

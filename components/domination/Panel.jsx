@@ -91,8 +91,8 @@ const AuthText = styled.div`
 	color: ${({theme}) => theme.lightGray};
 `;
 
-const AwaitStage = ({ user, updateUserBits }) => {
-	const { balance } = user;
+const AwaitStage = ({ user, updateAddingBits }) => {
+	const { balance } = user || {};
 	const [ inputValue, setInputValue ] = useState('');
 	const [ inProgress, setInProgress ] = useState(false);
 	const onChange = ({ target }) => {
@@ -101,7 +101,7 @@ const AwaitStage = ({ user, updateUserBits }) => {
 		if (isNaN(newValue)) newValue = inputValue;
 		if (newValue > balance) newValue = balance;
 		setInputValue(newValue || '');
-		updateUserBits(newValue);
+		updateAddingBits(newValue);
 	}
 	const changeValue = (handler) => {
 		let newValue = handler(Number(inputValue), balance);
@@ -109,7 +109,7 @@ const AwaitStage = ({ user, updateUserBits }) => {
 		if (newValue) newValue = Number(newValue.toFixed(1));
 		if (newValue > balance) newValue = balance;
 		setInputValue(newValue);
-		updateUserBits(newValue);
+		updateAddingBits(newValue);
 	}
 	const addValue = async () => {
 		if (Number(inputValue) > 0) {
@@ -119,7 +119,7 @@ const AwaitStage = ({ user, updateUserBits }) => {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ count: Number(inputValue) })
 			});
-			updateUserBits(0);
+			updateAddingBits(0);
 			setInputValue('');
 			setInProgress(false);
 			showNotification('Биты добавлены', 'success');
@@ -163,7 +163,7 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 		Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1 : 
 		randomCells.length - 1;
 	const current = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]];
-	const { color, name, photo_50, count } = current;
+	const { color, name, photo_100, count } = current;
 	const sum = players.reduce((all, { count }) => all + count, 0);
 
 	return (
@@ -172,10 +172,10 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 			<CenterColor bg={color} />
 			{ status === 2 ? 
 				<CenterColor>
-					<Photo src={photo_50} />
+					<Photo src={photo_100} />
 				</CenterColor> :
 				<CenterColor className='winner'>
-					<Button padding={0} left={<Photo src={photo_50} />} align='left'>
+					<Button padding={0} left={<Photo src={photo_100} />} align='left'>
 						<Name>{name}</Name>
 						<Bits value={count} />
 					</Button>
@@ -190,12 +190,12 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 		</StyledDefenition>
 	);
 }
-const Panel = ({ updateUserBits, domination, remaining }) => {
+const Panel = ({ updateAddingBits, domination, remaining }) => {
 	const [ user, userLoading ] = useSession();
 	const { status, randomCells, players } = domination;
 
 	return (
-		status === 0 || status === 1 ? <AwaitStage {...{ user, updateUserBits }} /> :
+		status === 0 || status === 1 ? <AwaitStage {...{ user, updateAddingBits }} /> :
 		status === 2 || status === 3 ? <WinnerStage {...{ status, randomCells, players, remaining }} /> : ''
 	)
 }

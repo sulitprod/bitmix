@@ -115,10 +115,10 @@ const StyledActions = styled.div`
 	}
 `;
 
-const Action = ({ photo_50, count, name, packages, color }) => (
+const Action = ({ photo_100, count, name, packages, color }) => (
 	<StyledAction>
 		<div>
-			<Photo src={photo_50} />
+			<Photo src={photo_100} />
 			<div className='text'>
 				<p>Игрок</p>
 				<p className='mainText'>{name}</p>
@@ -130,11 +130,11 @@ const Action = ({ photo_50, count, name, packages, color }) => (
 	</StyledAction>
 );
 
-const GroupedActions = ({ photo_50, count, name, packagesList, color }) => (
+const GroupedActions = ({ photo_100, count, name, packagesList, color }) => (
 	<StyledGroupedAction>
 		<div className='top'>
 			<div className='player'>
-				<Photo src={photo_50} />
+				<Photo src={photo_100} />
 				<p className='mainText'>{name}</p>
 				<p>({packagesList.length} {declText(packagesList.length, 'пакетов', 'пакет', 'пакета')})</p>
 			</div>
