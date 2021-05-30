@@ -74,9 +74,6 @@ const StyledInput = styled(Input)`
 	flex-grow: 1;
 `;
 const StyledButton = styled(Button)`
-	&& {
-		line-height: 24px;
-	}
 	&.values {
 		flex-basis: 64px;
 	}
@@ -129,13 +126,14 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 	}
 
 	return (
-		user ? <Styled>
+		user && 'id' in user ? <Styled>
 			{BUTTONS.map(([value, handler], key) => (
 				<StyledButton
 					className='values'
 					key={key}
 					type='main'
 					value={value}
+					padding={12}
 					onClick={() => changeValue(handler)}
 				/>
 			))}
@@ -144,11 +142,11 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 				value={inputValue}
 				onChange={onChange}
 				disabled={inProgress}
-				max={balance}
 			/>
 			<StyledButton 
 				className='add' 
-				type='main' 
+				type='main'
+				padding={12}
 				value='Добавить биты' 
 				loading={inProgress}
 				onClick={addValue} 

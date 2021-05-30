@@ -7,13 +7,22 @@ const Info = styled.div`
 	color: ${({theme}) => theme.white};
 
 	> .title {
-		display: flex;
-		justify-content: center;
+		font-size: 20px;
+    	line-height: 24px;
 		padding-bottom: ${({theme}) => theme.pg8};
+	}
+`;
 
-		> p {
-			font-size: 20px;
-		}
+const Warning = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: ${({theme}) => theme.lightGray};
+
+	> * {
+		margin: ${({theme}) => theme.pg8};
 	}
 `;
 
@@ -27,14 +36,47 @@ const Content = styled.div`
 	}
 `;
 
+const SubBlock = styled.div`
+	background: ${({theme}) => theme.shadowGray};
+	display: flex;
+	flex-direction: column;
+	width: 1022px;
+	padding: ${({theme}) => theme.pg12};
+	color: ${({theme}) => theme.white};
+
+	> div {
+		width: 100%;
+
+		&.header {
+			margin-bottom: ${({theme}) => theme.pg12};
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 40px;
+			
+			> div {
+				display: flex;
+			}
+			.buttons {
+				position: absolute;
+				right: 0;
+
+				> .button + .button {
+					margin-left: ${({theme}) => theme.pg8};
+				}
+			}
+		}
+	}
+`;
+
 const StyledSeparator = styled.p`
-	line-height: 120%;
+	font-size: inherit;
+	display: inline;
 	padding: 0 ${({theme}) => theme.pg8};
 `;
 const Separator = () => <StyledSeparator>•</StyledSeparator>;
 
 const StyledPackage = styled.div`
-	padding-left: ${({theme}) => theme.pg4};
 	display: flex;
 			
 	> p {
@@ -56,5 +98,5 @@ const Package = ({ color, packages }) => (
 );
 
 export {
-	Info, Content, Separator, Package
+	Info, Content, Separator, Package, Warning, SubBlock
 };

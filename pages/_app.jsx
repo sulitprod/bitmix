@@ -47,7 +47,8 @@ const theme = {
 	lightGray: '#9a9a9a',
 	pg12: '12px',
 	pg8: '8px',
-	pg4: '4px'
+	pg4: '4px',
+	redText: '#BF4242' 
 };
 
 const lightTheme = {
@@ -60,7 +61,8 @@ const lightTheme = {
 	lightGray: '#9a9a9a',
 	pg12: '12px',
 	pg8: '8px',
-	pg4: '4px'
+	pg4: '4px',
+	redText: '#BF4242'
 }
 
 const App = ({ Component, err, pageProps, router }) => {

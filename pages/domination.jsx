@@ -7,7 +7,7 @@ import Players from '../components/domination/Players';
 import FooterPanel from '../components/domination/FooterPanel';
 import Actions from '../components/domination/Actions';
 import Timer from '../components/domination/Timer';
-import { Info, Content, Separator } from '../components/Styled';
+import { Info, Content, Separator, Warning } from '../components/Styled';
 
 import { declText, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
@@ -16,20 +16,7 @@ import { TIMES } from '../constant';
 
 import styled from 'styled-components';
 import Icon from '../components/default/Icon';
-import { useSession } from 'next-auth/client';
 
-const Warning = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-	color: ${({theme}) => theme.lightGray};
-
-	> * {
-		padding: ${({theme}) => theme.pg8};
-	}
-`;
 const StyledIcon = styled(Icon)`
 	fill: ${({theme}) => theme.lightGray};
 `;
@@ -71,6 +58,8 @@ const Domination = ({ title, startDomination }) => {
 	const [ remaining, setRemaining ] = useState(computedRemaining());
 
 	useEffect(() => {
+		if (status === 2 || status === 3) updateAddingBits(0);
+
 		const interval = setInterval(() => {
 			const current = computedRemaining();
 
@@ -86,11 +75,7 @@ const Domination = ({ title, startDomination }) => {
 			{ domination ? 
 			<>
 				<Info>
-					<div className="title">
-						<p>{title}</p>
-						<Separator />
-						<p>Игра #{id}</p>
-					</div>
+					<div className="title">{title}<Separator />{`Игра #${id}`}</div>
 					<div>{`${players.length} ${declText(players.length, 'участников', 'участник', 'участника')}`}</div>
 				</Info>
 				<Content>

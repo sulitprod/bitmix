@@ -91,14 +91,6 @@ const Grid = ({ domination, remaining }) => {
 	useEffect(() => {
 		if (status === 2) setGrid(currentGrid());
 	}, [remaining]);
-
-	// if (status === 3 && id <= rings.length - 1) addRing();
-
-	// useEffect(() => {
-		// setGrid(currentGrid());
-		// setId(0);
-		// if (status === 3) addRing();
-	// }, [status]);
 	
 	useEffect(() => {
 		if (status === 3 && id <= rings.length - 1) addRing();

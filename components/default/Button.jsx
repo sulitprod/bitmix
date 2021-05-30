@@ -16,7 +16,7 @@ const Styled = styled.div`
 
 	> div {
 		display: inline-block;
-		line-height: 0;
+		line-height: ${({value}) => value ? '16px' : '0'};
 		vertical-align: middle;
 	}
 	> * + * {
@@ -58,9 +58,14 @@ const Button = ({
 
 	return (
 		<Link href={href}>
-			<Styled className={cn('button', type, { active, disabled }, className)} {...{onClick: disabled ? undefined : onClick, padding, align}}>
+			<Styled className={cn('button', type, { active, disabled }, className)} {...{
+				onClick: disabled ? undefined : onClick, 
+				padding, 
+				align,
+				value
+			}}>
 				{left && <div>{left}</div>}
-				<div className='value'>{loading ? <Icon src='load' /> : children || value}</div>
+				<div className='value'>{loading ? <Icon src='load' /> : (children || value)}</div>
 				{right && <div>{right}</div>}
 			</Styled>
 		</Link>

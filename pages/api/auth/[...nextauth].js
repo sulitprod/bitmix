@@ -16,7 +16,10 @@ export default NextAuth({
 				photo_100: picture,
 				name,
 				id: sub,
-				balance: 300
+				balance: 300,
+				rewards: [],
+				created: '21.05.2021',
+				status: 0
 			}
 		}
 	}

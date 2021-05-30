@@ -7,22 +7,8 @@ import Icon from '../default/Icon';
 import Photo from '../default/Photo';
 
 import { declText } from '../../utils';
-import { Package, Separator } from '../Styled';
+import { Package, Separator, SubBlock } from '../Styled';
 
-const ColoredIcon = styled(Icon)`
-	&& {
-		position: absolute;
-		left: 1px;
-		top: 6px;
-		fill: ${p => p.bg};
-	}
-`;
-const StyledIcon = styled(Icon)`
-	&& {
-		fill: ${({theme}) => theme.darkGray};
-		z-index: 1;
-	}
-`;
 const NoActionsText = styled.div`
 	text-align: center;
 	color: ${({theme}) => theme.lightGray};
@@ -31,12 +17,14 @@ const NoActionsText = styled.div`
 `;
 const StyledAction = styled.div`
 	display: flex;
-	padding: ${({theme}) => theme.pg4};
 	color: ${({theme}) => theme.lightGray};
 	justify-content: space-between;
 
 	.mainText {
 		color: ${({theme}) => theme.white};
+	}
+	& + & {
+		margin-top: ${({theme}) => theme.pg8};
 	}
 	> div {
 		display: flex;
@@ -59,13 +47,16 @@ const StyledGroupedAction = styled.div`
 	.mainText {
 		color: ${({theme}) => theme.white};
 	}
+	& + & {
+		margin-top: ${({theme}) => theme.pg8};
+	}
 	> div {
 		display: flex;
 		align-items: center;
-		padding: ${({theme}) => theme.pg4};
 
-		&.top {
+		&.header {
 			justify-content: space-between;
+			margin-bottom: ${({theme}) => theme.pg8};
 			
 			> .player {
 				display: flex;
@@ -80,36 +71,7 @@ const StyledGroupedAction = styled.div`
 			flex-wrap: wrap;
 
 			> div {
-				display: flex;
-				align-items: center;
-				margin-right: ${({theme}) => theme.pg4};
-			}
-		}
-	}
-`;
-const StyledActions = styled.div`
-	background: ${({theme}) => theme.shadowGray};
-	display: flex;
-	flex-direction: column;
-	width: 1022px;
-	padding: ${({theme}) => theme.pg8};
-	color: ${({theme}) => theme.white};
-
-	> .top {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		padding: ${({theme}) => theme.pg4};
-
-		> div {
-			align-items: center;
-			display: flex;
-
-			> .mainText {
-				font-weight: 600;
-			}
-			> .button + .button {
-				margin-left: ${({theme}) => theme.pg8};
+				margin: ${({theme}) => theme.pg4};
 			}
 		}
 	}
@@ -132,7 +94,7 @@ const Action = ({ photo_100, count, name, packages, color }) => (
 
 const GroupedActions = ({ photo_100, count, name, packagesList, color }) => (
 	<StyledGroupedAction>
-		<div className='top'>
+		<div className='header'>
 			<div className='player'>
 				<Photo src={photo_100} />
 				<p className='mainText'>{name}</p>
@@ -165,9 +127,9 @@ const Actions = ({ actions }) => {
 	groupedActions = Object.values(groupedActions);
 
 	return (
-		<StyledActions>
-			<div className='top'>
-				<div>
+		<SubBlock>
+			<div className='header'>
+				<div className='title'>
 					<p className='mainText'>История</p>
 					<Separator />
 					<p>{
@@ -176,7 +138,7 @@ const Actions = ({ actions }) => {
 					'Нет действий'
 					}</p>
 				</div>
-				<div>
+				<div className='buttons'>
 					<Button type='main' children={<Icon src='sort' width={24} />} onClick={() => changeSortView(true)} active={sortView} />
 					<Button type='main' children={<Icon src='list' width={24} />} onClick={() => changeSortView(false)} active={!sortView} />
 				</div>
@@ -187,7 +149,7 @@ const Actions = ({ actions }) => {
 				groupedActions.map((action, key) => <GroupedActions key={key} {...action} />) :
 				<NoActionsText>В игре пока не совершено действий</NoActionsText> }
 			</div>
-		</StyledActions>
+		</SubBlock>
 	);
 }
 
