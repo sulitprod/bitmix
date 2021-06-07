@@ -12,6 +12,7 @@ const Line = styled.div.attrs(p => ({
 	}}))`
 	background-color: ${p => p.bg};
 	width: 100%;
+	border-radius: 4px;
 `;
 const AddingLine = styled(Line)`
 	background-image: repeating-linear-gradient(
@@ -59,7 +60,8 @@ const StyledPlayers = styled.div`
 	height: 150px;
 `;
 const StyledIcon = styled(Icon)`
-	padding: 12px;
+	padding: ${({theme}) => theme.pg12};
+	border-radius: 4px;
 	background: ${({theme}) => theme.darkGray};
 `;
 const BonusText = styled.div`

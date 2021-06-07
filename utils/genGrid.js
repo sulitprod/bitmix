@@ -1,20 +1,18 @@
-import { CELLS_COUNT } from '../constant';
+import { CELLS } from '../constant';
 
-const generateGrid = (players, charsCount) => {
-	charsCount = charsCount || CELLS_COUNT;
-
+const generateGrid = (players) => {
 	const charsAll = [];
 
 	if (!players.length) {
-		for (let i = 0; i < charsCount; i++) {
+		for (let i = 0; i < CELLS.count; i++) {
 			charsAll.push(0);
 		}
 	} else {
 		const sum = players.reduce((all, { count }) => all + count, 0);
-		const chars = players.map(({ count }) => (charsCount / 100) * (count / (sum / 100)));
+		const chars = players.map(({ count }) => (CELLS.count / 100) * (count / (sum / 100)));
 		const charsRounded = chars.map((i) => Math.floor(i) + 1);
 
-		while (charsRounded.reduce((all, i) => all + i) !== charsCount) {
+		while (charsRounded.reduce((all, i) => all + i) !== CELLS.count) {
 			const max = charsRounded.indexOf(Math.max(...charsRounded));
 			charsRounded[max] -= 1;
 		}

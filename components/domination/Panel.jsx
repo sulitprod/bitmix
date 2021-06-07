@@ -6,7 +6,7 @@ import Icon from '../default/Icon';
 import Input from '../default/Input';
 
 import { showNotification } from '../../utils';
-import { CELLS_COUNT, TIMES } from '../../constant';
+import { CELLS, TIMES } from '../../constant';
 import Photo from '../default/Photo';
 import Bits from '../Bits';
 import { Package } from '../Styled';
@@ -51,6 +51,18 @@ const CenterColor = styled.div`
 	background: ${p => p.bg} !important;
 	width: 40px;
 	height: 40px !important;
+	border-radius: 4px;
+
+	&:not(.current):after {
+		content: '';
+		position: absolute;
+		background: #ffffff38;
+		width: 10px;
+		height: 10px;
+		z-index: 2;
+		left: 4px;
+		top: 4px;
+	}
 
 	&.winner {
 		width: 380px !important;
@@ -160,7 +172,7 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 	const id = status === 2 ? 
 		Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1 : 
 		randomCells.length - 1;
-	const current = players[randomCells[id].split(':')[(CELLS_COUNT - 1) / 2]];
+	const current = players[randomCells[id].split(':')[(CELLS.count - 1) / 2]];
 	const { color, name, photo_100, count } = current;
 	const sum = players.reduce((all, { count }) => all + count, 0);
 
@@ -169,7 +181,7 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 			<div />
 			<CenterColor bg={color} />
 			{ status === 2 ? 
-				<CenterColor>
+				<CenterColor className='current'>
 					<Photo src={photo_100} />
 				</CenterColor> :
 				<CenterColor className='winner'>

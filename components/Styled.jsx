@@ -43,6 +43,7 @@ const SubBlock = styled.div`
 	width: 1022px;
 	padding: ${({theme}) => theme.pg12};
 	color: ${({theme}) => theme.white};
+	border-radius: 4px;
 
 	> div {
 		width: 100%;

@@ -1,8 +1,10 @@
+import { useEffect, useRef, useState, useContext } from 'react';
 import cn from 'classnames';
-import { useEffect, useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { TIMES } from '../../constant';
-import { fillRings } from '../../utils';
+import styled, { keyframes, ThemeContext } from 'styled-components';
+import { CELLS, TIMES } from '../../constant';
+import { fillRingsStages } from '../../utils';
+
+const [ cols, rows ] = CELLS.fullSize;
 
 const gradientKeys = keyframes`
 	0% {
@@ -15,35 +17,14 @@ const gradientKeys = keyframes`
 		background-position: 0% 0%;
 	}
 `;
-const bitKeys = keyframes`
-	0% {
-		opacity: 0.1;
-	}
-	100% {
-		opacity: 1;
-	}
-`;
-const Bit = styled.p`
-	background: ${p => p.bg};
-	transition: background .1s ease;
-`;
 const Styled = styled.div`
 	width: 1000px;
 	height: 118px;
 	color: ${({theme}) => theme.bodyBackground};
-	border-top: 1px solid;
-	border-left: 1px solid; 
-	display: flex;
-	flex-flow: column wrap;
+	border: 1px solid;
+	border-radius: 4px;
+	overflow: hidden;
 
-	> p {
-		width: 9px;
-		height: 9px;
-		border-right: 1px solid;
-		border-bottom: 1px solid;
-		animation: ${bitKeys} linear alternate;
-		animation-duration: 1s;
-	}
 	&.stageNo {
 		animation: ${gradientKeys} linear alternate;
 		animation-iteration-count: infinite;
@@ -61,6 +42,9 @@ const Styled = styled.div`
 
 const Grid = ({ domination, remaining }) => {
 	const { cells, players, status, randomCells, winner } = domination;
+	const { bodyBackground } = useContext(ThemeContext);
+	const canvas = useRef(null);
+	const [focus, setFocus] = useState(true);
 	const currentGrid = () => {
 		if (status === 2) {
 			const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCells.length)) - 1;
@@ -69,36 +53,62 @@ const Grid = ({ domination, remaining }) => {
 		}
 		if (status === 3) return randomCells[randomCells.length - 1].split(':');
 
-		return cells.split(':');
+		return cells ? cells.split(':') : [];
 	};
 	const [ grid, setGrid ] = useState(currentGrid());
-	const [ id, setId ] = useState(0);
-	const rings = (status === 3) ? fillRings(grid) : null;
-	const addRing = () => {
-		for (const i of rings[id]) grid[i] = winner.player;
-		setGrid(grid);
-		setId(id + 1);
+	
+	const fillGrid = (cells) => {
+		const draw = canvas.current.getContext('2d');
+
+		draw.fillStyle = bodyBackground;
+		draw.fillRect(0, 0, cols * 9 - 1, rows * 9 - 1);
+		for (let i = 0; i < cols; i++) {
+			for (let j = 0; j < rows; j++) {
+				const id = cells[i * rows + j];
+
+				if (cells.length) {
+					draw.fillStyle = players[Number(id)].color;
+					draw.fillRect(9 * i, 9 * j, 8, 8);
+				} else {
+					draw.fillStyle = 'transparent';
+					draw.clearRect(9 * i, 9 * j, 8, 8);
+				}
+			}
+		}
+	}
+	const fillRings = () => {
+		const draw = canvas.current.getContext('2d');
+    	const rings = fillRingsStages();
+    	let i = 0;
+
+		let timeout = setTimeout(function fillRing() {
+			if (focus)
+				for (const cell of rings[i]) {
+					draw.fillStyle = players[Number(winner.player)].color;
+					draw.fillRect(9 * Math.floor(cell / rows), 9 * (cell % rows), 8, 8);
+				}
+			i++;
+			if (i !== rings.length) timeout = setTimeout(fillRing, 100);
+		}, 100);
 	}
 
 	useEffect(() => {
 		setGrid(currentGrid());
-		if (status === 3) {
-			if (!id) addRing(); 
-			else setId(0);
-		}
+		if (status === 3) fillRings();
 	}, [status, cells]);
-
 	useEffect(() => {
 		if (status === 2) setGrid(currentGrid());
 	}, [remaining]);
-	
+	useEffect(() => fillGrid(grid), [grid]);
 	useEffect(() => {
-		if (status === 3 && id <= rings.length - 1) addRing();
-	}, [id]);
+		document.addEventListener('visibilitychange', () => setFocus(document.visibilityState === 'visible'));
+		
+		return () => { document.removeEventListener('visibilitychange', setFocus) };
+	}, []);
 
 	return (
-		<Styled className={cn({ stageAwait: players.length, stageNo: !players.length })}>
-			{grid.map((id, key) => <Bit {...{key, bg: players.length ? players[id].color : 'transparent'}} />)}
+		<Styled className={cn({ stageNo: !players.length })}>
+			<canvas width={cols * 9 - 1} height={rows * 9 - 1} ref={canvas} />
 		</Styled>
 	);
 }

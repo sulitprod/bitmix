@@ -5,6 +5,7 @@ const Styled = styled.div`
 	color: ${({theme}) => theme.white};
 	display: block;
 	text-align: left;
+	border-radius: 4px;
 
 	> div {
 		display: inline-block;

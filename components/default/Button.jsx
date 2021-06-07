@@ -13,6 +13,7 @@ const Styled = styled.div`
 	line-height: 0;
 	white-space: nowrap;
 	user-select: none;
+	border-radius: 4px;
 
 	> div {
 		display: inline-block;

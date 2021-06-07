@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useDocumentData } from 'react-firebase-hooks/firestore';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import Grid from '../components/domination/Grid';
 import Panel from '../components/domination/Panel';
@@ -11,7 +11,7 @@ import { Info, Content, Separator, Warning } from '../components/Styled';
 
 import { declText, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
-import { getCurrentDomination } from '../hooks/domination';
+import { currentDomination } from '../hooks/domination';
 import { TIMES } from '../constant';
 
 import styled from 'styled-components';
@@ -43,11 +43,11 @@ const lastWinners = [
 ];
 
 const Domination = ({ title, startDomination }) => {
-	const [ getDomination, loading, error ] = useDocumentData(
-		firebaseDB.collection('current').doc('domination'),
+	const [ getDomination, loading, error ] = useCollectionData(
+		firebaseDB.collection('domination').where('current', '==', true),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
-	const domination = getDomination || startDomination;
+	const domination = getDomination ? getDomination[0] : startDomination;
 	const { id, players, status, started, actions } = domination;
 	const [ addingBits, updateAddingBits ] = useState(0);
 	const computedRemaining = () => {
@@ -96,10 +96,10 @@ const Domination = ({ title, startDomination }) => {
 }
 
 const getStaticProps = async () => {
-	const startDomination = await getCurrentDomination();
+	const { data } = await currentDomination();
 	const props = {
 		title: 'Доминация',
-		startDomination
+		startDomination: data
 	}
 
 	return { props }

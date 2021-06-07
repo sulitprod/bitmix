@@ -4,41 +4,66 @@ import random from 'random';
 import 'firebase/firestore';
 import { genGrid, rndColor, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
-import { CELLS_COUNT, TIMES } from '../constant';
-import { shuffle } from 'underscore';
+import { CELLS, TIMES } from '../constant';
+import { shuffle, clone } from 'underscore';
 import { getSession } from 'next-auth/client';
 
-export const addBits = async (count, req) => {
+const currentDominationRaw = async () => {
+	let current = await firebaseDB.collection('domination').where('current', '==', true).get();
+
+	if (current.empty) {
+		await addDomination(0);
+		current = await firebaseDB.collection('domination').where('current', '==', true).get();
+	}
+
+	return current;
+} 
+
+const currentDomination = async () => {
+	const raw = await currentDominationRaw();
+	let current;
+
+	raw.forEach(doc => current = { data: doc.data(), key: doc.id });
+
+	return current;
+}
+
+const addBits = async (count, req) => {
 	const currentUser = await getSession({ req });
-	const playerId = currentUser.id;
-	const domination = await getCurrentDomination();
-	const { id, players, status } = domination;
-	const sum = players.reduce((all, { count }) => all + count, 0);
+	const { data, key } = await currentDomination();
+	let newData = clone(data);
+	let { players, status } = newData;
 
 	if (status !== 0 && status !== 1) return;
+	if (currentUser.balance < count) return;
 
-	let newPlayer = null;
+	const sum = players.reduce((all, { count }) => all + count, 0);
 	const packages = { 0: sum * 10 + 1, 1: (sum + count) * 10 };
+	let newPlayer = null;
 
-	for (const player of domination.players) if (player.id === playerId) newPlayer = player;
+	for (const player of players) {
+		if (player.id === currentUser.id) {
+			newPlayer = player;
+			break;
+		}
+	}
 	if (!newPlayer) {
+		const { id, photo_100, name } = currentUser;
+
 		newPlayer = {
-			id: playerId,
-			photo_100: currentUser.photo_100,
-			name: currentUser.name,
+			id,
+			photo_100,
+			name,
 			bits: [],
 			count: 0,
 			color: rndColor()
 		}
-		domination.players = [
-			newPlayer,
-			...domination.players
-		];
+		players.push(newPlayer);
 	}
 	newPlayer.bits.push({ ...packages, 2: count });
 	newPlayer.count += count;
-	domination.cells = genGrid(domination.players).join(':');
-	domination.actions.push({
+	newData.cells = genGrid(players).join(':');
+	newData.actions.push({
 		id: newPlayer.id,
 		photo_100: newPlayer.photo_100, 
 		count,
@@ -48,9 +73,9 @@ export const addBits = async (count, req) => {
 	});
 
 	const bet = {
-		gameId: id,
+		gameId: newData.id,
 		gameType: 'domination',
-		playerId,
+		playerId: currentUser.id,
 		packages: [ sum * 10 + 1, (sum + count) * 10 ],
 		time: Times(1),
 		count
@@ -58,14 +83,14 @@ export const addBits = async (count, req) => {
 
 	// await firebaseDB.collection('current/domination/bets').add(bet);
 
-	await firebaseDB.collection('current').doc('domination').update(domination);
-	if (domination.status === 0 && domination.players.length >= 2) changeStatus(1);
+	await firebaseDB.collection('domination').doc(key).update(newData);
+	if (status === 0 && players.length >= 2) changeStatus(1);
 }
 
 const randomCells = (cells, winner) => {
 	const { player } = winner;
 	const newCells = [];
-	const gridCenter = (CELLS_COUNT - 1) / 2;
+	const gridCenter = (CELLS.count - 1) / 2;
 	const loopCount = TIMES.domination[2] * 2;
 
 	for (let i = 0; i < loopCount; i++) newCells.push(shuffle(cells.split(':')));
@@ -101,9 +126,9 @@ const setWinner = (float, players) => {
 	return { bit, player }
 }
 
-export const changeStatus = async (status) => {
-	const domination = await getCurrentDomination();
-	const { cells, float, players } = domination;
+const changeStatus = async (status) => {
+	const { data, key } = await currentDomination();
+	const { cells, float, players } = data;
 	const newValues = {
 		started: Times(1),
 		status
@@ -121,51 +146,44 @@ export const changeStatus = async (status) => {
 			setTimeout(() => changeStatus(status + 1), TIMES.domination[status] * 1000);
 			break;
 		case 3:
-			// setTimeout(() => changeStatus(0), TIMES.domination[status] * 1000);
+			setTimeout(() => { 
+				addReward();
+				createDomination();
+			}, TIMES.domination[status] * 1000);
 			break;
 	}
-	await firebaseDB.collection('current').doc('domination').update({ ...domination, ...newValues });
+	await firebaseDB.collection('domination').doc(key).update({ ...data, ...newValues });
 }
 
-const setDomination = async (id) => {
+const addReward = async () => {
+	console.log('hello');
+}
+
+const addDomination = async (id) => {
 	const float = random.float();
 	const token = rs.generate(16);
 
-	await firebaseDB.collection('current').doc('domination').set({
+	await firebaseDB.collection('domination').add({
 		id,
 		actions: [],
-		cells: genGrid([]).join(':'),
+		cells: '',
 		players: [],
 		status: 0,
 		float,
+		current: true,
 		token,
 		hash: hash(`${float}:${token}`),
 		created: Times(1)
 	});
-}
-
-export const getCurrentDomination = async () => {
-	let current = await firebaseDB.collection('current').doc('domination').get();
-	let domination;
-
-	if (!current.exists) {
-		await setDomination(0);
-		current = await firebaseDB.collection('current').doc('domination').get();
-	}
-	domination = current.data();
-
-	return domination;
 } 
 
-export const createDomination = async () => {
-	const current = await firebaseDB.collection('current').doc('domination').get();
-	let id = 0;
+const createDomination = async () => {
+	const { data, key } = await currentDomination();
 
-	if (current.exists) {
-		const data = current.data();
+	await addDomination(data.id + 1);
+	await firebaseDB.collection('domination').doc(key).update({ ...data, current: false });
+}
 
-		await firebaseDB.collection('domination').add(data);
-		id = data.id + 1;
-	}
-	await setDomination(id);
+export {
+	currentDomination, createDomination, addBits
 }

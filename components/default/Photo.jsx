@@ -5,6 +5,7 @@ const Styled = styled.div`
 	background-size: cover;
 	height: ${p => p.height}px;
 	width: ${p => p.width}px;
+	border-radius: 4px;
 `;
 
 const Photo = ({ src, width = 40, height }) => {
