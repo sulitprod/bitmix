@@ -1,5 +1,5 @@
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { getSession, Provider } from 'next-auth/client';
+import { getSession, Provider as SessionProvider } from 'next-auth/client';
 
 import MainHead from '../components/MainHead';
 import Header from '../components/Header';
@@ -7,20 +7,10 @@ import Subheader from '../components/Subheader';
 import Notifications from '../components/default/Notifications';
 import manifest from '../public/manifest.json';
 import { rndColor } from '../utils';
+import '../public/default.css';
+import { StoreProvider } from '../providers/Store';
 
 const GlobalStyle = createGlobalStyle`
-	* {
-		border: 0;
-		box-sizing: border-box;
-		font-family: Pixel, serif;
-		font-size: 14px;
-		list-style: none;
-		margin: 0;
-		outline: 0;
-		padding: 0;
-		position: relative;
-		text-decoration: none;
-	}
 	html {
 		height: 100%;
 
@@ -48,7 +38,7 @@ const theme = {
 	pg12: '12px',
 	pg8: '8px',
 	pg4: '4px',
-	redText: '#BF4242' 
+	redText: '#BF4242'
 };
 
 const lightTheme = {
@@ -70,14 +60,16 @@ const App = ({ Component, err, pageProps, router }) => {
 
 	return (
 		<ThemeProvider theme={theme}>
-			<Provider session={session}>
-				<GlobalStyle />
-				<MainHead {...{ title, description }} />
-				<Header {...{ color }} />
-				<Subheader />
-				<Component {...{ ...pageProps, ...router }} />
-				<Notifications />
-			</Provider>
+			<GlobalStyle />
+			<StoreProvider {...pageProps}>
+				<SessionProvider session={session}>
+					<MainHead {...{ title, description }} />
+					<Header {...{ color }} />
+					<Subheader />
+					<Component {...{ ...pageProps, ...router }} />
+					<Notifications />
+				</SessionProvider>
+			</StoreProvider>
 		</ThemeProvider>
 	);
 }

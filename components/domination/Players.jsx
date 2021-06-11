@@ -1,11 +1,23 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+import { observer } from 'mobx-react-lite';
 
 import Photo from '../default/Photo';
 import Icon from '../default/Icon';
 
 import { percent } from '../../utils';
 import { useSession } from 'next-auth/client';
+import { useStore } from '../../providers/Store';
 
+const addingKeys = keyframes`
+	0% {
+		bottom: 4px;
+		opacity: 0.5;
+	}
+	100% {
+		bottom: 0;
+		opacity: 1;
+	}
+`;
 const Line = styled.div.attrs(p => ({
 	style: {
 		height: `${percent(p.sum, p.count)}px`,
@@ -19,8 +31,8 @@ const AddingLine = styled(Line)`
 		45deg, 
 		transparent 0, 
 		transparent 4px, 
-		${({theme}) => theme.darkGray} 4px, 
-		${({theme}) => theme.darkGray} 8px
+		${({theme, bonus}) => bonus ? '#2b452b' : theme.darkGray} 4px, 
+		${({theme, bonus}) => bonus ? '#2b452b' : theme.darkGray} 8px
 	);
 	background-color: ${({theme}) => theme.shadowGray};
 `;
@@ -42,6 +54,8 @@ const StyledPlayer = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 40px;
+	animation: ${addingKeys} linear;
+	animation-duration: .2s;
 
 	& + & {
 		margin-left: ${({theme}) => theme.pg8};
@@ -67,32 +81,38 @@ const StyledIcon = styled(Icon)`
 const BonusText = styled.div`
 	color: #53e253;
 	position: absolute;
-	left: -108px;
-	text-align: right;
-	width: 100px;
+	left: 50px;
+	top: 30px;
+	line-height: 24px;
 `;
 
-const Player = ({ photo_100, color, sum, count, addingBits, userBet }) => (
-	<StyledPlayer>
-		<LineArea>
-			<Line {...{ sum, count, bg: color }} />
-			{ userBet ? 
-			<AddingLine {...{ sum, count: addingBits, bg: '' }}>
-				{ sum === count + addingBits ? <BonusText>+2% к выигрышу</BonusText> : '' }
-			</AddingLine> : '' }
-		</LineArea>
-		{ photo_100 ? 
-			<Photo src={photo_100} /> : 
-			<StyledIcon src='add' />
-		}
-	</StyledPlayer>
-);
+const Player = ({ photo_100, color, sum, count, addingBits, userBet }) => {
+	const bonus = sum === count + addingBits;
+
+	return (
+		<StyledPlayer>
+			<LineArea>
+				<Line {...{ sum, count, bg: color }} />
+				{ userBet ? 
+				<AddingLine {...{ bonus, sum, count: addingBits, bg: '' }}>
+					{ bonus ? <BonusText>+2% к выигрышу</BonusText> : '' }
+				</AddingLine> : '' }
+			</LineArea>
+			{ photo_100 ? 
+				<Photo src={photo_100} /> : 
+				<StyledIcon src='add' />
+			}
+		</StyledPlayer>
+	);
+};
 
 const arraySum = (players) => players.reduce((all, { count }) => all + count, 0)
 
-const Players = ({ addingBits, players }) => {
+const Players = observer(({ addingBits, players }) => {
 	const [ user, userLoading ] = useSession();
 	const sum = arraySum(players) + addingBits;
+	const newData = useStore();
+	console.log(newData);
 	let inGame = false;
 
 	if (user) for (const player of players) if (player.id === user.id) inGame = true;
@@ -118,6 +138,6 @@ const Players = ({ addingBits, players }) => {
 			}
 		</StyledPlayers>
 	);
-}
+});
 
 export default Players;

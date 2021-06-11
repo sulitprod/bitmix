@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import Bits from '../components/Bits';
 import Photo from '../components/default/Photo';
 
-import { Info, Content } from '../components/Styled';
+import { Info, Content, Main } from '../components/Styled';
 
 const StyledLeaders = styled.div`
 	width: 1022px;
@@ -56,7 +56,7 @@ const Leader = ({ photo_100, name, count, id }) => (
 	</StyledLeader>
 );
 const Leaders = ({ info }) => (
-	<main>
+	<Main>
 		<Info>
 			<div className="title">
 				<p className="name">Список лидеров</p>
@@ -72,7 +72,7 @@ const Leaders = ({ info }) => (
 				{info.map((props, key) => <Leader {...props} key={key} id={key} />)}
 			</StyledLeaders>
 		</Content>
-	</main>
+	</Main>
 );
 
 export default Leaders;

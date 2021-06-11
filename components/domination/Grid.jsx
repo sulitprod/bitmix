@@ -18,10 +18,9 @@ const gradientKeys = keyframes`
 	}
 `;
 const Styled = styled.div`
-	width: 1000px;
-	height: 118px;
+	width: 998px;
+	height: 116px;
 	color: ${({theme}) => theme.bodyBackground};
-	border: 1px solid;
 	border-radius: 4px;
 	overflow: hidden;
 
@@ -44,31 +43,40 @@ const Grid = ({ domination, remaining }) => {
 	const { cells, players, status, randomCells, winner } = domination;
 	const { bodyBackground } = useContext(ThemeContext);
 	const canvas = useRef(null);
-	const [focus, setFocus] = useState(true);
+	const statusTime = TIMES.domination[status];
+	const rings = (status === 3) ? fillRingsStages() : null;
+	const [id, setId] = useState(status === 3 ? Math.ceil((statusTime - remaining) / (statusTime / rings.length)) - 1 : 0);
+
 	const currentGrid = () => {
-		if (status === 2) {
-			const id = Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCells.length)) - 1;
+		switch (status) {
+			case 2:
+				const id = Math.ceil((statusTime - remaining) / (statusTime / randomCells.length)) - 1;
 
-			return randomCells[id].split(':');
+				return randomCells[id].split(':');
+			case 3:
+				return randomCells[randomCells.length - 1].split(':');
+			default:
+				return cells ? cells.split(':') : [];
 		}
-		if (status === 3) return randomCells[randomCells.length - 1].split(':');
-
-		return cells ? cells.split(':') : [];
 	};
-	const [ grid, setGrid ] = useState(currentGrid());
-	
-	const fillGrid = (cells) => {
+	const [grid, setGrid] = useState(currentGrid());
+	const drawCell = (canvas, x, y, color) => {
+		canvas.fillStyle = color;
+		canvas.fillRect(9 * x, 9 * y, 8, 8);
+		canvas.fillStyle = 'rgb(255 255 255 / 22%)';
+		canvas.fillRect(9 * x + 1, 9 * y + 1, 3, 3);
+	}
+	const fillGrid = () => {
 		const draw = canvas.current.getContext('2d');
 
 		draw.fillStyle = bodyBackground;
 		draw.fillRect(0, 0, cols * 9 - 1, rows * 9 - 1);
 		for (let i = 0; i < cols; i++) {
 			for (let j = 0; j < rows; j++) {
-				const id = cells[i * rows + j];
+				const id = grid[i * rows + j];
 
-				if (cells.length) {
-					draw.fillStyle = players[Number(id)].color;
-					draw.fillRect(9 * i, 9 * j, 8, 8);
+				if (grid.length) {
+					drawCell(draw, i, j, players[Number(id)].color)
 				} else {
 					draw.fillStyle = 'transparent';
 					draw.clearRect(9 * i, 9 * j, 8, 8);
@@ -76,35 +84,37 @@ const Grid = ({ domination, remaining }) => {
 			}
 		}
 	}
-	const fillRings = () => {
-		const draw = canvas.current.getContext('2d');
-    	const rings = fillRingsStages();
-    	let i = 0;
+	const addRing = () => {
+		const newGrid = grid.slice(0);
 
-		let timeout = setTimeout(function fillRing() {
-			if (focus)
-				for (const cell of rings[i]) {
-					draw.fillStyle = players[Number(winner.player)].color;
-					draw.fillRect(9 * Math.floor(cell / rows), 9 * (cell % rows), 8, 8);
-				}
-			i++;
-			if (i !== rings.length) timeout = setTimeout(fillRing, 100);
-		}, 100);
+		for (const i of rings[id]) newGrid[i] = winner.player;
+		setGrid(newGrid);
+		setTimeout(() => setId(id + 1), statusTime * 1000 / (rings.length * 2));
 	}
 
 	useEffect(() => {
+		if (status === 3 && id <= rings.length - 1) addRing();
+	}, [id]);
+	useEffect(() => {
 		setGrid(currentGrid());
-		if (status === 3) fillRings();
+		if (status === 3) addRing();
+		else setId(0);
 	}, [status, cells]);
 	useEffect(() => {
 		if (status === 2) setGrid(currentGrid());
 	}, [remaining]);
-	useEffect(() => fillGrid(grid), [grid]);
 	useEffect(() => {
-		document.addEventListener('visibilitychange', () => setFocus(document.visibilityState === 'visible'));
-		
-		return () => { document.removeEventListener('visibilitychange', setFocus) };
-	}, []);
+		if (status === 3) {
+			const newGrid = grid.slice(0);
+
+			for (const ring in rings) {
+				for (const i of rings[ring]) newGrid[i] = winner.player;
+				if (id === Number(ring)) break;
+			}
+			setGrid(newGrid);
+		}
+	}, [])
+	useEffect(fillGrid, [grid]);
 
 	return (
 		<Styled className={cn({ stageNo: !players.length })}>

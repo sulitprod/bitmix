@@ -28,6 +28,7 @@ const Warning = styled.div`
 
 const Content = styled.div`
 	display: flex;
+	width: 1022px;
 	flex-direction: column;
 	align-items: center;
 
@@ -40,7 +41,7 @@ const SubBlock = styled.div`
 	background: ${({theme}) => theme.shadowGray};
 	display: flex;
 	flex-direction: column;
-	width: 1022px;
+	width: 100%;
 	padding: ${({theme}) => theme.pg12};
 	color: ${({theme}) => theme.white};
 	border-radius: 4px;
@@ -70,6 +71,14 @@ const SubBlock = styled.div`
 	}
 `;
 
+const Main = styled.main`
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: ${({theme}) => theme.white};
+`;
+
 const StyledSeparator = styled.p`
 	font-size: inherit;
 	display: inline;
@@ -86,6 +95,7 @@ const StyledPackage = styled.div`
 		padding: ${({theme}) => theme.pg4};
 		line-height: 12px;
     	font-size: 12px;
+		border-radius: 2px;
 	}
 `;
 const ColoredIcon = styled(Icon)`
@@ -99,5 +109,5 @@ const Package = ({ color, packages }) => (
 );
 
 export {
-	Info, Content, Separator, Package, Warning, SubBlock
+	Info, Content, Separator, Package, Warning, SubBlock, Main
 };

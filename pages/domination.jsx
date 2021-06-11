@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
+import styled from 'styled-components';
 
 import Grid from '../components/domination/Grid';
 import Panel from '../components/domination/Panel';
@@ -7,21 +8,17 @@ import Players from '../components/domination/Players';
 import FooterPanel from '../components/domination/FooterPanel';
 import Actions from '../components/domination/Actions';
 import Timer from '../components/domination/Timer';
-import { Info, Content, Separator, Warning } from '../components/Styled';
+import { Info, Content, Separator, Warning, Main } from '../components/Styled';
 
 import { declText, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 import { currentDomination } from '../hooks/domination';
 import { TIMES } from '../constant';
-
-import styled from 'styled-components';
 import Icon from '../components/default/Icon';
+import { useStore } from '../providers/Store';
 
 const StyledIcon = styled(Icon)`
 	fill: ${({theme}) => theme.lightGray};
-`;
-const Main = styled.main`
-	height: 100%;
 `;
 
 const lastWinners = [

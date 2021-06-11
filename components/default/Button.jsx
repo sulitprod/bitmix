@@ -37,6 +37,7 @@ const Styled = styled.div`
 	}
 	&.disabled {
 		cursor: default;
+		opacity: 0.6;
 	}
 `;
 

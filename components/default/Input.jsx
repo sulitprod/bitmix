@@ -4,7 +4,6 @@ const Styled = styled.div`
 	background: ${({theme}) => theme.gray};
 	color: ${({theme}) => theme.white};
 	display: block;
-	text-align: left;
 	border-radius: 4px;
 
 	> div {
@@ -20,6 +19,7 @@ const Styled = styled.div`
 		color: unset;
 		padding: ${({theme}) => theme.pg8};
 		line-height: unset;
+		width: 100%;
 	}
 `;
 

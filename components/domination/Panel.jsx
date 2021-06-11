@@ -29,7 +29,8 @@ const Name = styled.p`
 `;
 const Styled = styled.div`
 	display: flex;
-	width: 998px;
+	width: 100%;
+	padding: 0 12px;
 	align-items: center;
 
 	> * {
@@ -56,7 +57,7 @@ const CenterColor = styled.div`
 	&:not(.current):after {
 		content: '';
 		position: absolute;
-		background: #ffffff38;
+		background: rgb(255 255 255 / 22%);
 		width: 10px;
 		height: 10px;
 		z-index: 2;
@@ -153,12 +154,12 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 				placeholder='Количество'
 				value={inputValue}
 				onChange={onChange}
-				disabled={inProgress}
 			/>
 			<StyledButton 
 				className='add' 
 				type='main'
 				padding={12}
+				disabled={!inputValue}
 				value='Добавить биты' 
 				loading={inProgress}
 				onClick={addValue} 
@@ -184,7 +185,7 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 				<CenterColor className='current'>
 					<Photo src={photo_100} />
 				</CenterColor> :
-				<CenterColor className='winner'>
+				<CenterColor className='current winner'>
 					<Button padding={0} left={<Photo src={photo_100} />} align='left'>
 						<Name>{name}</Name>
 						<Bits value={count} />

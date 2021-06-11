@@ -8,7 +8,8 @@ import Icon from '../default/Icon';
 const StyledTimer = styled.div`
 	height: 40px;
 	display: flex;
-	width: 998px;
+	width: 100%;
+	padding: 0 12px;
 	align-items: center;
 `;
 const TimeLines = styled.div`

@@ -7,7 +7,8 @@ import { Separator } from '../Styled';
 const Styled = styled.div`
 	display: flex;
 	justify-content: space-between;
-	width: 998px;
+	width: 100%;
+	padding: 0 12px;
 	color: ${({theme}) => theme.white};
 
 	> div {

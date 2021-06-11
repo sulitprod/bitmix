@@ -6,7 +6,6 @@ const Styled = styled.div`
 	font-size: 0;
 	line-height: 0;
 	fill: ${({theme}) => theme.white};
-	display: inline-block;
 	padding: ${p => p.padding}px;
 
 	> svg {

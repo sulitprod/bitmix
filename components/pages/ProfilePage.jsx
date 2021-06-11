@@ -3,14 +3,10 @@ import styled from "styled-components";
 import Bits from "../Bits";
 import Button from "../default/Button";
 import Photo from "../default/Photo";
-import { Info, Content, SubBlock, Separator } from "../Styled";
+import { Info, Content, SubBlock, Separator, Main } from "../Styled";
 import { useEffect, useState } from "react";
 import Tooltip from "../default/Tooltip";
 
-const Main = styled.main`
-	height: 100%;
-	color: ${({theme}) => theme.white};
-`;
 const Actions = styled.div`
 	display: flex;
 	
