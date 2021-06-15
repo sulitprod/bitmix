@@ -1,12 +1,11 @@
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react-lite';
-
-import Photo from '../default/Photo';
-import Icon from '../default/Icon';
-
-import { percent } from '../../utils';
 import { useSession } from 'next-auth/client';
+
+import { Photo, Icon } from '../default';
+import { percent } from '../../utils';
 import { useStore } from '../../providers/Store';
+import { Warning } from '../Styled';
 
 const addingKeys = keyframes`
 	0% {
@@ -35,20 +34,6 @@ const AddingLine = styled(Line)`
 		${({theme, bonus}) => bonus ? '#2b452b' : theme.darkGray} 8px
 	);
 	background-color: ${({theme}) => theme.shadowGray};
-`;
-const GiftIcon = styled(Icon)`
-	fill: ${({theme}) => theme.lightGray};
-`;
-const GiftText = styled.div`
-	text-align: center;
-	color: ${({theme}) => theme.lightGray};
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-
-	> * {
-		padding: ${({theme}) => theme.pg8};
-	}
 `;
 const StyledPlayer = styled.div`
 	display: flex;
@@ -106,13 +91,12 @@ const Player = ({ photo_100, color, sum, count, addingBits, userBet }) => {
 	);
 };
 
-const arraySum = (players) => players.reduce((all, { count }) => all + count, 0)
+const arraySum = (players) => players.reduce((all, { count }) => all + count, 0);
 
-const Players = observer(({ addingBits, players }) => {
+const Players = observer(() => {
+	const { players, addingBits } = useStore();
 	const [ user, userLoading ] = useSession();
 	const sum = arraySum(players) + addingBits;
-	const newData = useStore();
-	console.log(newData);
 	let inGame = false;
 
 	if (user) for (const player of players) if (player.id === user.id) inGame = true;
@@ -131,10 +115,10 @@ const Players = observer(({ addingBits, players }) => {
 					addingBits
 				}} />
 			)) : 
-			<GiftText>
-				<GiftIcon src='gift' width={64} />
+			<Warning>
+				<Icon src='gift' width={64} />
 				<p>Добавьте к игре биты первым и получите дополнительные 2% при выигрыше!</p>
-			</GiftText>
+			</Warning>
 			}
 		</StyledPlayers>
 	);

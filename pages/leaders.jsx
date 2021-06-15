@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import Bits from '../components/Bits';
-import Photo from '../components/default/Photo';
 
+import Bits from '../components/Bits';
+import { Photo } from '../components/default';
 import { Info, Content, Main } from '../components/Styled';
 
 const StyledLeaders = styled.div`
-	width: 1022px;
+	width: 100%;
 	display: table;
 	color: ${({theme}) => theme.white};
 `;
@@ -47,26 +47,24 @@ const StyledLeader = styled(FlexRow)`
 
 const Leader = ({ photo_100, name, count, id }) => (
 	<StyledLeader>
-		<div className="place">{id + 1}</div>
-		<div className="player">
+		<div className='place'>{id + 1}</div>
+		<div className='player'>
 			<Photo src={photo_100} />
 			<p>{name}</p>
 		</div>
-		<Bits value={count} className="count" />
+		<Bits value={count} className='count' />
 	</StyledLeader>
 );
 const Leaders = ({ info }) => (
 	<Main>
 		<Info>
-			<div className="title">
-				<p className="name">Список лидеров</p>
-			</div>
+			<div className='title'>Список лидеров</div>
 		</Info>
 		<Content>
 			<StyledLeaders>
 				<FlexRow>
 					<div>Место</div>
-					<div className="player">Игрок</div>
+					<div className='player'>Игрок</div>
 					<div>Выигрыш</div>
 				</FlexRow>
 				{info.map((props, key) => <Leader {...props} key={key} id={key} />)}

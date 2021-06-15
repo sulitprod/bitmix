@@ -1,5 +1,4 @@
-import ReactTooltip from "react-tooltip";
-
+import ReactTooltip from 'react-tooltip';
 import styled from 'styled-components';
 
 const StyledTooltip = styled(ReactTooltip)`

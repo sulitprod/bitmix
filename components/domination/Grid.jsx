@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState, useContext } from 'react';
 import cn from 'classnames';
+import { observer } from 'mobx-react-lite';
 import styled, { keyframes, ThemeContext } from 'styled-components';
-import { CELLS, TIMES } from '../../constant';
+
+import { CELLS } from '../../constant';
 import { fillRingsStages } from '../../utils';
+import { useStore } from '../../providers/Store';
 
 const [ cols, rows ] = CELLS.fullSize;
 
@@ -39,27 +42,13 @@ const Styled = styled.div`
 	}
 `;
 
-const Grid = ({ domination, remaining }) => {
-	const { cells, players, status, randomCells, winner } = domination;
+const Grid = observer(() => {
+	const { cells, players, status, winner, remaining, currentGrid, statusTime } = useStore();
 	const { bodyBackground } = useContext(ThemeContext);
 	const canvas = useRef(null);
-	const statusTime = TIMES.domination[status];
 	const rings = (status === 3) ? fillRingsStages() : null;
 	const [id, setId] = useState(status === 3 ? Math.ceil((statusTime - remaining) / (statusTime / rings.length)) - 1 : 0);
-
-	const currentGrid = () => {
-		switch (status) {
-			case 2:
-				const id = Math.ceil((statusTime - remaining) / (statusTime / randomCells.length)) - 1;
-
-				return randomCells[id].split(':');
-			case 3:
-				return randomCells[randomCells.length - 1].split(':');
-			default:
-				return cells ? cells.split(':') : [];
-		}
-	};
-	const [grid, setGrid] = useState(currentGrid());
+	const [grid, setGrid] = useState(currentGrid);
 	const drawCell = (canvas, x, y, color) => {
 		canvas.fillStyle = color;
 		canvas.fillRect(9 * x, 9 * y, 8, 8);
@@ -96,12 +85,12 @@ const Grid = ({ domination, remaining }) => {
 		if (status === 3 && id <= rings.length - 1) addRing();
 	}, [id]);
 	useEffect(() => {
-		setGrid(currentGrid());
+		setGrid(currentGrid);
 		if (status === 3) addRing();
 		else setId(0);
 	}, [status, cells]);
 	useEffect(() => {
-		if (status === 2) setGrid(currentGrid());
+		if (status === 2) setGrid(currentGrid);
 	}, [remaining]);
 	useEffect(() => {
 		if (status === 3) {
@@ -121,6 +110,6 @@ const Grid = ({ domination, remaining }) => {
 			<canvas width={cols * 9 - 1} height={rows * 9 - 1} ref={canvas} />
 		</Styled>
 	);
-}
+});
 
 export default Grid;

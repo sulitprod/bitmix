@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
 
-import Button from '../default/Button';
 import Bits from '../Bits';
-import Icon from '../default/Icon';
-import Photo from '../default/Photo';
-
+import { Icon, Photo, Button } from '../default';
 import { declText } from '../../utils';
 import { Package, Separator, SubBlock } from '../Styled';
+import { useStore } from '../../providers/Store';
 
 const NoActionsText = styled.div`
 	text-align: center;
@@ -108,7 +107,8 @@ const GroupedActions = ({ photo_100, count, name, packagesList, color }) => (
 	</StyledGroupedAction>
 );
 
-const Actions = ({ actions }) => {
+const Actions = observer(() => {
+	const { actions } = useStore();
 	const [ sortView, changeSortView ] = useState(true);
 	const sortedActions = actions.slice(0).reverse();
 	let groupedActions = {};
@@ -151,6 +151,6 @@ const Actions = ({ actions }) => {
 			</div>
 		</SubBlock>
 	);
-}
+});
 
 export default Actions;

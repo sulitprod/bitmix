@@ -7,8 +7,10 @@ import Subheader from '../components/Subheader';
 import Notifications from '../components/default/Notifications';
 import manifest from '../public/manifest.json';
 import { rndColor } from '../utils';
-import '../public/default.css';
 import { StoreProvider } from '../providers/Store';
+import { currentDomination } from '../hooks/domination';
+
+import '../public/default.css';
 
 const GlobalStyle = createGlobalStyle`
 	html {
@@ -56,20 +58,20 @@ const lightTheme = {
 }
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description, color, session } = pageProps;
+	const { title, description, color, session, domination } = pageProps;
 
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyle />
-			<StoreProvider {...pageProps}>
-				<SessionProvider session={session}>
-					<MainHead {...{ title, description }} />
-					<Header {...{ color }} />
-					<Subheader />
-					<Component {...{ ...pageProps, ...router }} />
-					<Notifications />
-				</SessionProvider>
-			</StoreProvider>
+			<SessionProvider session={session}>
+				<StoreProvider {...{ initialState: domination.data }}>
+						<MainHead {...{ title, description }} />
+						<Header {...{ color }} />
+						<Subheader />
+						<Component {...{ ...pageProps, ...router }} />
+						<Notifications />
+				</StoreProvider>
+			</SessionProvider>
 		</ThemeProvider>
 	);
 }
@@ -78,7 +80,8 @@ App.getInitialProps = async ({ req }) => {
 	return { 
 		pageProps: { 
 			color: rndColor(), 
-			session: getSession({ req }) 
+			session: getSession({ req }),
+			domination: await currentDomination()
 		}
 	}
 }

@@ -1,11 +1,10 @@
-import { signOut, useSession } from "next-auth/client";
-import styled from "styled-components";
-import Bits from "../Bits";
-import Button from "../default/Button";
-import Photo from "../default/Photo";
-import { Info, Content, SubBlock, Separator, Main } from "../Styled";
-import { useEffect, useState } from "react";
-import Tooltip from "../default/Tooltip";
+import { signOut, useSession } from 'next-auth/client';
+import styled from 'styled-components';
+import { useEffect, useState } from 'react';
+
+import Bits from '../Bits';
+import { Button, Photo, Tooltip } from '../default';
+import { Info, Content, SubBlock, Separator, Main } from '../Styled';
 
 const Actions = styled.div`
 	display: flex;
@@ -195,7 +194,7 @@ const ProfilePage = ({ searchId }) => {
 	return (
 		<Main>
 			<Info>
-				<div className="title">Профиль</div>
+				<div className='title'>Профиль</div>
 			</Info>
 			<Content>
 				<Photo src={photo_100} width={100} />

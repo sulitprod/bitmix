@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Icon from './default/Icon';
+import { Icon } from './default';
 
 const Info = styled.div`
 	margin: 32px 0;
@@ -23,6 +23,9 @@ const Warning = styled.div`
 
 	> * {
 		margin: ${({theme}) => theme.pg8};
+	}
+	> div {
+		fill: ${({theme}) => theme.lightGray};
 	}
 `;
 

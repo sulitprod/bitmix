@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
 import Bits from './Bits';
-import Button from './default/Button';
-import Photo from './default/Photo';
+import { Button, Photo } from './default';
 
 const Name = styled.p`
 	line-height: 16px;

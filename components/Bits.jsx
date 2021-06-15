@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import Icon from './default/Icon';
+import { Icon } from './default';
 
 const Styled = styled.div`
 	color: ${({theme}) => theme.white};

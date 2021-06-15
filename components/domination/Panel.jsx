@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import styled from 'styled-components';
+import { useSession } from 'next-auth/client';
+import { observer } from 'mobx-react-lite';
 
-import Button from '../default/Button';
-import Icon from '../default/Icon';
-import Input from '../default/Input';
-
+import { Photo, Input, Icon, Button } from '../default';
 import { showNotification } from '../../utils';
-import { CELLS, TIMES } from '../../constant';
-import Photo from '../default/Photo';
+import { CELLS } from '../../constant';
 import Bits from '../Bits';
 import { Package } from '../Styled';
-import { useSession } from 'next-auth/client';
+import { useStore } from '../../providers/Store';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -101,7 +99,7 @@ const AuthText = styled.div`
 	color: ${({theme}) => theme.lightGray};
 `;
 
-const AwaitStage = ({ user, updateAddingBits }) => {
+const AwaitStage = ({ user, setAddingBits }) => {
 	const { balance } = user || {};
 	const [ inputValue, setInputValue ] = useState('');
 	const [ inProgress, setInProgress ] = useState(false);
@@ -111,7 +109,7 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 		if (isNaN(newValue)) newValue = inputValue;
 		if (newValue > balance) newValue = balance;
 		setInputValue(newValue || '');
-		updateAddingBits(newValue);
+		setAddingBits(newValue);
 	}
 	const changeValue = (handler) => {
 		let newValue = handler(Number(inputValue), balance);
@@ -119,7 +117,7 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 		if (newValue) newValue = Number(newValue.toFixed(1));
 		if (newValue > balance) newValue = balance;
 		setInputValue(newValue);
-		updateAddingBits(newValue);
+		setAddingBits(newValue);
 	}
 	const addValue = async () => {
 		if (Number(inputValue) > 0) {
@@ -129,7 +127,7 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ count: Number(inputValue) })
 			});
-			updateAddingBits(0);
+			setAddingBits(0);
 			setInputValue('');
 			setInProgress(false);
 			showNotification('Биты добавлены', 'success');
@@ -168,10 +166,10 @@ const AwaitStage = ({ user, updateAddingBits }) => {
 		<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
 	);
 }
-const WinnerStage = ({ status, randomCells, players, remaining }) => {
+const WinnerStage = ({ status, randomCells, players, remaining, statusTime }) => {
 	const randomCount = randomCells.length;
 	const id = status === 2 ? 
-		Math.ceil((TIMES.domination[status] - remaining) / (TIMES.domination[status] / randomCount)) - 1 : 
+		Math.ceil((statusTime - remaining) / (statusTime / randomCount)) - 1 : 
 		randomCells.length - 1;
 	const current = players[randomCells[id].split(':')[(CELLS.count - 1) / 2]];
 	const { color, name, photo_100, count } = current;
@@ -201,14 +199,14 @@ const WinnerStage = ({ status, randomCells, players, remaining }) => {
 		</StyledDefenition>
 	);
 }
-const Panel = ({ updateAddingBits, domination, remaining }) => {
+const Panel = observer(() => {
+	const { status, setAddingBits, players, randomCells, remaining, statusTime } = useStore();
 	const [ user, userLoading ] = useSession();
-	const { status, randomCells, players } = domination;
 
 	return (
-		status === 0 || status === 1 ? <AwaitStage {...{ user, updateAddingBits }} /> :
-		status === 2 || status === 3 ? <WinnerStage {...{ status, randomCells, players, remaining }} /> : ''
+		status === 0 || status === 1 ? <AwaitStage {...{ user, setAddingBits }} /> :
+		status === 2 || status === 3 ? <WinnerStage {...{ status, randomCells, players, remaining, statusTime }} /> : ''
 	)
-}
+});
 
 export default Panel;

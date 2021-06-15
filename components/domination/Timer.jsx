@@ -1,9 +1,10 @@
-import cn from 'classnames';
 import styled from 'styled-components';
-import { TIMES } from '../../constant';
 import { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+
 import { Times } from '../../utils';
-import Icon from '../default/Icon';
+import { Icon } from '../default';
+import { useStore } from '../../providers/Store';
 
 const StyledTimer = styled.div`
 	height: 40px;
@@ -34,20 +35,14 @@ const TimeLines = styled.div`
 	> div {
 		width: 10px;
 		border-radius: 2px;
-		background: ${({theme}) => theme.gray};
-		&.active {
-			background: ${({theme}) => theme.darkGray};
-		}
+		background: ${({theme, active}) => active ? theme.darkGray : theme.gray};
 	}
 `;
 const State = styled.div`
 	line-height: 16px;
 	flex-grow: 1;
 	text-align: center;
-	color: ${({theme}) => theme.lightGray};
-	&.active {
-		color: ${({theme}) => theme.white};
-	}
+	color: ${({theme, active}) => active ? theme.white : theme.lightGray};
 `;
 
 const Lines = ({ count, defaultCount, className }) => {
@@ -58,12 +53,13 @@ const Lines = ({ count, defaultCount, className }) => {
 
 	return (
 		<TimeLines {...{ className }}>
-			{lines.map((active, key) => <div className={cn({ active })} key={key} />)}
+			{lines.map((active, key) => <div active={active} key={key} />)}
 		</TimeLines>
 	);
 }
 
-const Timer = ({ status, remaining }) => {
+const Timer = observer(() => {
+	const { status, statusTime, remaining } = useStore();
 	const active = status !== 0;
 	const defaultCount = 30;
 	const [ syncRemaining, setRem ] = useState(0); 
@@ -73,19 +69,19 @@ const Timer = ({ status, remaining }) => {
 		'Определение победителя',
 		'Победитель'
 	][status];
-	const count = active ? Math.floor(defaultCount / TIMES.domination[status] * syncRemaining) : 0;
+	const count = active ? Math.floor(defaultCount / statusTime * syncRemaining) : 0;
 
 	useEffect(() => setRem(remaining), [remaining]);
 
 	return (
 		<StyledTimer>
 			<Lines {...{ count, defaultCount, className: 'left'}} />
-			<State className={cn({ active })}>{
+			<State active={active}>{
 				(active && count === 0) ? <Icon src='load' /> : statusText
 			}</State>
 			<Lines {...{ count, defaultCount, className: 'right'}} />
 		</StyledTimer>
 	);
-}
+});
 
 export default Timer;

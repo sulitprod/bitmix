@@ -1,7 +1,9 @@
+import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
+import { useStore } from '../../providers/Store';
 
 import Bits from '../Bits';
-import Photo from '../default/Photo';
+import { Photo } from '../default';
 import { Separator } from '../Styled';
 
 const Styled = styled.div`
@@ -20,9 +22,28 @@ const LastWinners = styled.div`
 	> div + div {
 		margin-left: ${({theme}) => theme.pg8};
 	}
-`
+`;
 
-export default function FooterPanel({ lastWinners, players }) {
+const lastWinners = [
+	{
+		photo_100: 'img/favicon.png',
+	},
+	{
+		photo_100: 'img/favicon.png',
+	},
+	{
+		photo_100: 'img/favicon.png',
+	},
+	{
+		photo_100: 'img/favicon.png',
+	},
+	{
+		photo_100: 'img/favicon.png',
+	},
+];
+
+const FooterPanel = observer(() => {
+	const { players } = useStore();
 	const sum = players.reduce((all, { count }) => all + count, 0);
 
 	return (
@@ -39,4 +60,6 @@ export default function FooterPanel({ lastWinners, players }) {
 			</div>
 		</Styled>
 	);
-}
+});
+
+export default FooterPanel;

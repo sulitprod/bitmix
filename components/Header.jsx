@@ -2,9 +2,7 @@ import styled from 'styled-components';
 import { useSession, signIn } from 'next-auth/client';
 
 import Profile from './Profile';
-import Button from './default/Button';
-import Link from './default/Link';
-import Icon from './default/Icon';
+import { Button, Link, Icon } from './default';
 
 const Styled = styled.div`
 	align-items: center;
@@ -39,7 +37,12 @@ const Header = ({ color }) => {
 			</Link>
 			{ user && 'id' in user ? 
 				<Profile user={user} href='/user' /> :
-				<Button right={<Icon src='login' width={24} padding={8} />} align='right' value='Вход' onClick={() => signIn('vk')} />
+				<Button {...{
+					right: <Icon src='login' width={24} />,
+					align: 'right',
+					value: 'Вход',
+					onClick: () => signIn('vk')
+				}} />
 			}
 		</Styled>
 	);
