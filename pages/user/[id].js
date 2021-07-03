@@ -1,11 +1,11 @@
-import { useSession } from 'next-auth/client';
 import { useRouter } from 'next/router';
 
 import ProfilePage from '../../components/pages/ProfilePage';
+import { useUser } from '../../providers/Store';
 
 const User = () => {
 	const params = useRouter();
-	const [ user, userLoading ] = useSession();
+	const user = useUser();
 	const { id } = params.query;
 
 	return (

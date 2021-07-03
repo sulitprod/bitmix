@@ -5,7 +5,7 @@ const handler = async (req, res) => {
 	const user = await getSession({ req });
 	const { method, body } = req;
 
-	if (method === 'POST' && user && 'count' in body) {
+	if (method === 'POST' && user && body.count) {
 		const { count } = body;
 		
 		await addBits(count, req);

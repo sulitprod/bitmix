@@ -1,12 +1,14 @@
 import { runInAction, makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
-import { TIMES } from './constant';
-import { isClient, Times } from './utils';
+
+import { TIMES } from '../constant';
+import { isClient, Times } from '../utils';
 
 enableStaticRendering(!isClient());
 
 class Store {
 	id;
+	session;
 	actions;
 	status;
 	players;
@@ -59,12 +61,12 @@ class Store {
 			}, 500);
 	}
 
-	init = (data) => {
+	init = async (data) => {
 		if (!data) return;
 
 		clearInterval(this.timer);
 
-		const { actions, status, cells, players, started, id, float, hash, token, randomCells, winner } = data;
+		const { actions, status, cells, players, started, id, float, hash, token, randomCells, winner, lastWinners } = data.domination;
 
 		this.actions = actions;
 		this.status = status;
@@ -78,7 +80,11 @@ class Store {
 		this.token = token;
 		this.winner = winner;
 
+		this.lastWinners = lastWinners;
+
 		this.startRemaining();
+
+		this.session = data.session;
 	}
 }
 

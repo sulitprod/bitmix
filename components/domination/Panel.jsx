@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { useSession } from 'next-auth/client';
 import { observer } from 'mobx-react-lite';
 
 import { Photo, Input, Icon, Button } from '../default';
@@ -8,7 +7,7 @@ import { showNotification } from '../../utils';
 import { CELLS } from '../../constant';
 import Bits from '../Bits';
 import { Package } from '../Styled';
-import { useStore } from '../../providers/Store';
+import { useStore, useUser } from '../../providers/Store';
 
 const BUTTONS = [
 	[<Icon src='trash' />, () => ''],
@@ -137,7 +136,7 @@ const AwaitStage = ({ user, setAddingBits }) => {
 	}
 
 	return (
-		user && 'id' in user ? <Styled>
+		user?.id ? <Styled>
 			{BUTTONS.map(([value, handler], key) => (
 				<StyledButton
 					className='values'
@@ -201,7 +200,7 @@ const WinnerStage = ({ status, randomCells, players, remaining, statusTime }) =>
 }
 const Panel = observer(() => {
 	const { status, setAddingBits, players, randomCells, remaining, statusTime } = useStore();
-	const [ user, userLoading ] = useSession();
+	const user = useUser();
 
 	return (
 		status === 0 || status === 1 ? <AwaitStage {...{ user, setAddingBits }} /> :

@@ -6,6 +6,7 @@ import genGrid from './genGrid';
 import percent from './percent';
 import fillRingsStages from './fillRings';
 import showNotification from './showNotification';
+import randomCells from './rndCells';
 import Times from './times';
 
 export {
@@ -17,5 +18,6 @@ export {
 	percent,
 	fillRingsStages,
 	showNotification,
+	randomCells,
 	Times
 }

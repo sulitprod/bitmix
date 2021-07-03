@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -31,12 +32,11 @@ const TimeLines = styled.div`
 			border-right: 2px solid;
 		}
 	}
-	
-	> div {
-		width: 10px;
-		border-radius: 2px;
-		background: ${({theme, active}) => active ? theme.darkGray : theme.gray};
-	}
+`;
+const Line = styled.div`
+	width: 10px;
+	border-radius: 2px;
+	background: ${({theme, active}) => active ? theme.darkGray : theme.gray};
 `;
 const State = styled.div`
 	line-height: 16px;
@@ -53,7 +53,7 @@ const Lines = ({ count, defaultCount, className }) => {
 
 	return (
 		<TimeLines {...{ className }}>
-			{lines.map((active, key) => <div active={active} key={key} />)}
+			{lines.map((active, key) => <Line active={active} key={key} />)}
 		</TimeLines>
 	);
 }

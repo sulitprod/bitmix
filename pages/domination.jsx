@@ -1,29 +1,16 @@
-import { useEffect } from 'react';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { observer } from 'mobx-react-lite';
-
-import Grid from '../components/domination/Grid';
-import Panel from '../components/domination/Panel';
-import Players from '../components/domination/Players';
-import FooterPanel from '../components/domination/FooterPanel';
-import Actions from '../components/domination/Actions';
-import Timer from '../components/domination/Timer';
+import { 
+	Grid, Panel, Players, 
+	FooterPanel, Actions, Timer 
+} from '../components/domination';
 import { Info, Content, Separator, Warning, Main } from '../components/Styled';
-
 import { declText } from '../utils';
 import { Icon } from '../components/default';
 import { useStore } from '../providers/Store';
-import { firebaseDB } from '../utils/firebase';
 
 const Domination = observer(({ title }) => {
 	const domination = useStore();
-	const [ getDomination, loading, error ] = useCollectionData(
-		firebaseDB.collection('domination').where('current', '==', true),
-		{ snapshotListenOptions: { includeMetadataChanges: true } }
-	);
 	const { id, players } = domination;
-
-	useEffect(() => getDomination ? domination.init(getDomination[0]) : '', [getDomination]);
 
 	return (
 		<Main>

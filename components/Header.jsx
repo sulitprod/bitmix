@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import { useSession, signIn } from 'next-auth/client';
+import { signIn } from 'next-auth/client';
 
 import Profile from './Profile';
 import { Button, Link, Icon } from './default';
+import { useUser } from '../providers/Store';
 
 const Styled = styled.div`
 	align-items: center;
@@ -25,7 +26,7 @@ const Logo = styled.div`
 `;
 
 const Header = ({ color }) => {
-	const [ user, loading ] = useSession();
+	const user = useUser();
 
 	return (
 		<Styled>
@@ -35,7 +36,7 @@ const Header = ({ color }) => {
 			<Link href='/'>
 				<Logo bg={color}>BITMIX</Logo>
 			</Link>
-			{ user && 'id' in user ? 
+			{ user?.id ? 
 				<Profile user={user} href='/user' /> :
 				<Button {...{
 					right: <Icon src='login' width={24} />,

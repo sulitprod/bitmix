@@ -1,13 +1,14 @@
-import { signIn, useSession } from 'next-auth/client';
+import { signIn } from 'next-auth/client';
 
 import { Button, Icon } from '../../components/default';
 import ProfilePage from '../../components/pages/ProfilePage';
 import { Warning } from '../../components/Styled';
+import { useUser } from '../../providers/Store';
 
 const User = () => {
-	const [ user, userLoading ] = useSession();
+	const user = useUser();
 
-	return (user && 'id' in user ? 
+	return (user?.id ? 
 		<ProfilePage /> :
 		<Warning>
 			<Icon src='warning' width={64} />

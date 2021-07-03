@@ -24,32 +24,14 @@ const LastWinners = styled.div`
 	}
 `;
 
-const lastWinners = [
-	{
-		photo_100: 'img/favicon.png',
-	},
-	{
-		photo_100: 'img/favicon.png',
-	},
-	{
-		photo_100: 'img/favicon.png',
-	},
-	{
-		photo_100: 'img/favicon.png',
-	},
-	{
-		photo_100: 'img/favicon.png',
-	},
-];
-
 const FooterPanel = observer(() => {
-	const { players } = useStore();
+	const { players, lastWinners } = useStore();
 	const sum = players.reduce((all, { count }) => all + count, 0);
 
 	return (
 		<Styled>
 			<LastWinners>
-				{lastWinners.map(({ photo_100 }, key) => <Photo src={photo_100} key={key} />)}
+				{lastWinners.map(({ data: { winner, players } }, key) => <Photo src={players[winner.player].photo_100} key={key} />)}
 				<Separator />
 				<p>Последние победители</p>
 			</LastWinners>

@@ -1,10 +1,11 @@
-import { signOut, useSession } from 'next-auth/client';
+import { signOut } from 'next-auth/client';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 
 import Bits from '../Bits';
 import { Button, Photo, Tooltip } from '../default';
 import { Info, Content, SubBlock, Separator, Main } from '../Styled';
+import { useUser } from '../../providers/Store';
 
 const Actions = styled.div`
 	display: flex;
@@ -164,7 +165,7 @@ const Settings = () => {
 }
 
 const ProfilePage = ({ searchId }) => {
-	const [ user, userLoading ] = useSession();
+	const user = useUser();
 	const statusText = [
 		'Стандарт',
 		'Премиум',

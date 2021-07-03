@@ -1,10 +1,11 @@
 import { createContext, useContext } from 'react';
-import Store from '../store';
+import Store from '../stores/Store';
 import { isClient } from '../utils';
 
 let store;
 const StoreContext = createContext();
 const useStore = () => useContext(StoreContext);
+const useUser = () => useContext(StoreContext).session;
 const StoreProvider = ({ children, initialState }) => {
 	const store = initializeStore(initialState);
 
@@ -24,5 +25,6 @@ const initializeStore = (initialState = null) => {
 export {
 	StoreContext,
 	StoreProvider,
-	useStore
+	useStore,
+	useUser
 }

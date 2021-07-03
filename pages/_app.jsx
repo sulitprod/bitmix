@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
+import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
-import { getSession, Provider as SessionProvider } from 'next-auth/client';
+import { getSession } from 'next-auth/client';
 
 import MainHead from '../components/MainHead';
 import Header from '../components/Header';
@@ -8,7 +10,8 @@ import Notifications from '../components/default/Notifications';
 import manifest from '../public/manifest.json';
 import { rndColor } from '../utils';
 import { StoreProvider } from '../providers/Store';
-import { currentDomination } from '../hooks/domination';
+import { currentDomination, lastWinners } from '../hooks/domination';
+import { firebaseDB } from '../utils/firebase';
 
 import '../public/default.css';
 
@@ -58,30 +61,39 @@ const lightTheme = {
 }
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description, color, session, domination } = pageProps;
+	const { title, description, color, session, domination, lastWinners } = pageProps;
+	const [ getDomination, loading, error ] = useCollectionData(
+		firebaseDB.collection('domination').where('status', '!=', 3),
+		{ snapshotListenOptions: { includeMetadataChanges: true } }
+	);
+	const initialState = {
+		domination: getDomination ? getDomination[0] : domination.data,
+		session
+	};
+	initialState.domination.lastWinners = lastWinners;
+	
 
 	return (
 		<ThemeProvider theme={theme}>
 			<GlobalStyle />
-			<SessionProvider session={session}>
-				<StoreProvider {...{ initialState: domination.data }}>
-						<MainHead {...{ title, description }} />
-						<Header {...{ color }} />
-						<Subheader />
-						<Component {...{ ...pageProps, ...router }} />
-						<Notifications />
-				</StoreProvider>
-			</SessionProvider>
+			<StoreProvider {...{ initialState }}>
+				<MainHead {...{ title, description }} />
+				<Header {...{ color }} />
+				<Subheader />
+				<Component {...{ ...pageProps, ...router }} />
+				<Notifications />
+			</StoreProvider>
 		</ThemeProvider>
 	);
 }
 
-App.getInitialProps = async ({ req }) => {
-	return { 
+App.getInitialProps = async (ctx) => {
+	return {
 		pageProps: { 
 			color: rndColor(), 
-			session: getSession({ req }),
-			domination: await currentDomination()
+			session: await getSession(ctx),
+			domination: await currentDomination(),
+			lastWinners: await lastWinners()
 		}
 	}
 }

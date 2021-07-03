@@ -1,10 +1,9 @@
 import styled, { keyframes } from 'styled-components';
 import { observer } from 'mobx-react-lite';
-import { useSession } from 'next-auth/client';
 
 import { Photo, Icon } from '../default';
 import { percent } from '../../utils';
-import { useStore } from '../../providers/Store';
+import { useStore, useUser } from '../../providers/Store';
 import { Warning } from '../Styled';
 
 const addingKeys = keyframes`
@@ -95,7 +94,7 @@ const arraySum = (players) => players.reduce((all, { count }) => all + count, 0)
 
 const Players = observer(() => {
 	const { players, addingBits } = useStore();
-	const [ user, userLoading ] = useSession();
+	const user = useUser();
 	const sum = arraySum(players) + addingBits;
 	let inGame = false;
 
