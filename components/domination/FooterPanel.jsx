@@ -25,13 +25,15 @@ const LastWinners = styled.div`
 `;
 
 const FooterPanel = observer(() => {
-	const { players, lastWinners } = useStore();
-	const sum = players.reduce((all, { count }) => all + count, 0);
+	const { lastWinners, sum } = useStore();
 
 	return (
 		<Styled>
 			<LastWinners>
-				{lastWinners.map(({ data: { winner, players } }, key) => <Photo src={players[winner.player].photo_100} key={key} />)}
+				{ lastWinners.length ?
+				lastWinners.map(({ photo }, key) => <Photo src={photo} key={key} />) :
+				<p>Отсутствуют</p>
+				}
 				<Separator />
 				<p>Последние победители</p>
 			</LastWinners>

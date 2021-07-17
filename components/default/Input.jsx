@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import cn from 'classnames';
 import styled from 'styled-components';
 
 const Styled = styled.div`
@@ -5,6 +7,11 @@ const Styled = styled.div`
 	color: ${({theme}) => theme.white};
 	display: block;
 	border-radius: 4px;
+	transition: 0.4s background ease;
+
+	&.focus {
+		background: ${({theme}) => theme.grayFocus};
+	}
 
 	> div {
 		display: inline-block;
@@ -29,15 +36,19 @@ const Input = ({
 	placeholder, 
 	value, 
 	onChange,
+	onKeyDown,
 	className,
 	max,
 	min,
-	pattern
+	pattern,
+	element
 }) => {
+	const [focus, setFocus] = useState(false);
+
 	return (
-		<Styled className={className}>
+		<Styled className={cn({ focus }, className)}>
 			{left && <div>{left}</div>}
-			<input {...{ placeholder, value, onChange }} />
+			<input {...{ placeholder, value, onChange, onKeyDown, ref: element, onFocus: () => setFocus(true), onBlur: () => setFocus(false) }} />
 			{right && <div>{right}</div>}
 		</Styled>
 	)

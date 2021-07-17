@@ -93,10 +93,7 @@ const LastGames = () => {
 				</div>
 			</div>
 			<div className='content'>
-				{ lastGames.length ? 
-				'' :
-				<WarningText>Участия в играх не найдено</WarningText>
-				}
+				{ !lastGames.length && <WarningText>Участия в играх не найдено</WarningText> }
 			</div>
 		</SubBlock>
 	)
@@ -202,7 +199,7 @@ const ProfilePage = ({ searchId }) => {
 				<CreatedInfo>ID: {id}<Separator />Created: {created}</CreatedInfo>
 				<Actions>
 					<Button value='Перевести биты' type='main' padding={12} />
-					{ searchId ? '' : <SignOut value='Выйти' type='main' onClick={signOut} padding={12} /> }
+					{ !searchId && <SignOut value='Выйти' type='main' onClick={signOut} padding={12} /> }
 				</Actions>
 				<Name>
 					<p>{name}</p>

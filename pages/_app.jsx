@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { getSession } from 'next-auth/client';
@@ -36,14 +36,15 @@ const theme = {
 	bodyBackground: manifest.background_color,
 	white: '#ffffff',
 	gray: '#434343',
+	grayFocus: '#57585a',
 	darkGray: '#282828',
 	darkGrayHover: '#1b1b1b',
 	shadowGray: '#2F2F2F',
 	lightGray: '#9a9a9a',
+	redText: '#BF4242',
 	pg12: '12px',
 	pg8: '8px',
-	pg4: '4px',
-	redText: '#BF4242'
+	pg4: '4px'
 };
 
 const lightTheme = {
@@ -54,24 +55,30 @@ const lightTheme = {
 	darkGrayHover: '#dadada',
 	shadowGray: '#e2e2e2',
 	lightGray: '#9a9a9a',
+	redText: '#BF4242',
 	pg12: '12px',
 	pg8: '8px',
-	pg4: '4px',
-	redText: '#BF4242'
+	pg4: '4px'
 }
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description, color, session, domination, lastWinners } = pageProps;
+	const { title, description, color, session, domination, lastWin, redis } = pageProps;
+	const [ currentDomination, setCurrent ] = useState({ ...domination.data, lastWinners: lastWin });
 	const [ getDomination, loading, error ] = useCollectionData(
-		firebaseDB.collection('domination').where('status', '!=', 3),
+		firebaseDB.collection('domination').where('status', '!=', 4),
 		{ snapshotListenOptions: { includeMetadataChanges: true } }
 	);
+	useEffect(async () => {
+		if (getDomination) setCurrent({
+			...getDomination[0], lastWinners: await lastWinners()
+		});
+	}, [getDomination]);
 	const initialState = {
-		domination: getDomination ? getDomination[0] : domination.data,
-		session
+		domination: currentDomination,
+		session,
+		redis
 	};
-	initialState.domination.lastWinners = lastWinners;
-	
+	initialState.domination.lastWinners = lastWin;
 
 	return (
 		<ThemeProvider theme={theme}>
@@ -88,12 +95,15 @@ const App = ({ Component, err, pageProps, router }) => {
 }
 
 App.getInitialProps = async (ctx) => {
+	const { getCurrentGame } = (await import('../hooks/domination-redis'));
+
 	return {
 		pageProps: { 
 			color: rndColor(), 
 			session: await getSession(ctx),
+			redis: await getCurrentGame(),
 			domination: await currentDomination(),
-			lastWinners: await lastWinners()
+			lastWin: await lastWinners()
 		}
 	}
 }

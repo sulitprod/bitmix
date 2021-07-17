@@ -54,7 +54,8 @@ const Button = ({
 	align = 'center',
 	className,
 	disabled,
-	loading
+	loading,
+	onMouseDown
 }) => {
 	disabled = disabled || loading;
 
@@ -64,7 +65,8 @@ const Button = ({
 				onClick: disabled ? undefined : onClick, 
 				padding, 
 				align,
-				value
+				value,
+				onMouseDown
 			}}>
 				{left && <div>{left}</div>}
 				<div className='value'>{loading ? <Icon src='load' /> : (children || value)}</div>

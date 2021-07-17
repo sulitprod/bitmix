@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
+import { sumBy } from 'lodash';
 
 import { Photo, Input, Icon, Button } from '../default';
 import { showNotification } from '../../utils';
@@ -10,14 +11,14 @@ import { Package } from '../Styled';
 import { useStore, useUser } from '../../providers/Store';
 
 const BUTTONS = [
-	[<Icon src='trash' />, () => ''],
-	['+0.1', (value) => value + 0.1],
-	['+1', (value) => value + 1],
-	['+10', (value) => value + 10],
-	['+100', (value) => value + 100],
-	['1/2', (value) => value / 2],
-	['х2', (value) => value * 2],
-	['Всё', (_, balance) => balance]
+	[<Icon src='trash' />, () => 0, (value, _) => value !== 0],
+	['+0.1', (value) => value + 0.1, (value, balance) => value !== balance],
+	['+1', (value) => value + 1, (value, balance) => value !== balance],
+	['+10', (value) => value + 10, (value, balance) => value !== balance],
+	['+100', (value) => value + 100, (value, balance) => value !== balance],
+	['1/2', (value) => value / 2, (value, balance) => value !== 0 && value !== balance],
+	['х2', (value) => value * 2, (value, balance) => value !== 0 && value !== balance],
+	['Всё', (_, balance) => balance, (value, balance) => value !== balance]
 ];
 
 const Name = styled.p`
@@ -100,34 +101,52 @@ const AuthText = styled.div`
 
 const AwaitStage = ({ user, setAddingBits }) => {
 	const { balance } = user || {};
-	const [ inputValue, setInputValue ] = useState('');
+	const input = useRef(null);
+	const [ inputValue, setInputValue ] = useState(0);
 	const [ inProgress, setInProgress ] = useState(false);
+	const setValue = (newValue) => {
+		if (newValue >= 0) {
+			setInputValue(newValue);
+			setAddingBits(newValue);
+		}
+		if (input.current !== document.activeElement) input.current.focus();
+	}
+	const keyControl = ({ keyCode }) => {
+		switch (keyCode) {
+			case 13:
+				addValue();
+				break;
+			case 189:
+				setValue(inputValue - 1);
+				break;
+			case 187:
+				setValue(inputValue + 1);
+				break;
+		}
+	}
 	const onChange = ({ target }) => {
 		let newValue = Number(target.value);
 
 		if (isNaN(newValue)) newValue = inputValue;
 		if (newValue > balance) newValue = balance;
-		setInputValue(newValue || '');
-		setAddingBits(newValue);
+		setValue(newValue);
 	}
 	const changeValue = (handler) => {
-		let newValue = handler(Number(inputValue), balance);
+		let newValue = handler(inputValue, balance);
 
 		if (newValue) newValue = Number(newValue.toFixed(1));
 		if (newValue > balance) newValue = balance;
-		setInputValue(newValue);
-		setAddingBits(newValue);
+		setValue(newValue);
 	}
 	const addValue = async () => {
-		if (Number(inputValue) > 0) {
+		if (inputValue > 0) {
 			setInProgress(true);
 			await fetch('/api/bet', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ count: Number(inputValue) })
+				body: JSON.stringify({ count: inputValue })
 			});
-			setAddingBits(0);
-			setInputValue('');
+			setValue(0);
 			setInProgress(false);
 			showNotification('Биты добавлены', 'success');
 		} else {
@@ -137,22 +156,32 @@ const AwaitStage = ({ user, setAddingBits }) => {
 
 	return (
 		user?.id ? <Styled>
-			{BUTTONS.map(([value, handler], key) => (
-				<StyledButton
-					className='values'
-					key={key}
-					type='main'
-					value={value}
-					padding={12}
-					onClick={() => changeValue(handler)}
-				/>
-			))}
+			{BUTTONS.map(([value, handler, active], key) => {
+				const disabled = active(inputValue, balance);
+				return (
+					<StyledButton
+						className='values'
+						key={key}
+						type='main'
+						value={value}
+						padding={12}
+						disabled={!active(inputValue, balance)}
+						onClick={() => changeValue(handler)}
+						onMouseDown={(event) => {
+							event.preventDefault();
+							event.stopPropagation();
+						}}
+					/>
+				)
+			})}
 			<StyledInput
+				element={input}
 				placeholder='Количество'
-				value={inputValue}
+				value={inputValue || ''}
 				onChange={onChange}
+				onKeyDown={keyControl}
 			/>
-			<StyledButton 
+			<StyledButton
 				className='add' 
 				type='main'
 				padding={12}
@@ -165,14 +194,13 @@ const AwaitStage = ({ user, setAddingBits }) => {
 		<AuthText>Чтобы добавлять биты, нужно авторизоваться</AuthText>
 	);
 }
-const WinnerStage = ({ status, randomCells, players, remaining, statusTime }) => {
-	const randomCount = randomCells.length;
+const WinnerStage = ({ status, randomGrids, players, remaining, statusTime, sum }) => {
+	const randomCount = randomGrids.length;
 	const id = status === 2 ? 
 		Math.ceil((statusTime - remaining) / (statusTime / randomCount)) - 1 : 
-		randomCells.length - 1;
-	const current = players[randomCells[id].split(':')[(CELLS.count - 1) / 2]];
+		randomCount - 1;
+	const current = players[randomGrids[id].split(':')[(CELLS.count - 1) / 2]];
 	const { color, name, photo_100, count } = current;
-	const sum = players.reduce((all, { count }) => all + count, 0);
 
 	return (
 		<StyledDefenition>
@@ -199,12 +227,12 @@ const WinnerStage = ({ status, randomCells, players, remaining, statusTime }) =>
 	);
 }
 const Panel = observer(() => {
-	const { status, setAddingBits, players, randomCells, remaining, statusTime } = useStore();
+	const { status, setAddingBits, players, randomGrids, remaining, statusTime, sum } = useStore();
 	const user = useUser();
 
 	return (
 		status === 0 || status === 1 ? <AwaitStage {...{ user, setAddingBits }} /> :
-		status === 2 || status === 3 ? <WinnerStage {...{ status, randomCells, players, remaining, statusTime }} /> : ''
+		status === 2 || status === 3 ? <WinnerStage {...{ status, randomGrids, players, remaining, statusTime, sum }} /> : ''
 	)
 });
 

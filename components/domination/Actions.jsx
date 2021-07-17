@@ -116,7 +116,7 @@ const Actions = observer(() => {
 	for (const action of sortedActions) {
 		const { id, packages, count } = action;
 
-		if (!(groupedActions.id)) groupedActions[id] = {
+		if (!(id in groupedActions)) groupedActions[id] = {
 			...action,
 			count: 0,
 			packagesList: []

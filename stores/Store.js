@@ -1,8 +1,9 @@
 import { runInAction, makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
+import { sumBy } from 'lodash';
 
 import { TIMES } from '../constant';
-import { isClient, Times } from '../utils';
+import { isClient, Times, genGrid } from '../utils';
 
 enableStaticRendering(!isClient());
 
@@ -12,8 +13,7 @@ class Store {
 	actions;
 	status;
 	players;
-	cells;
-	randomCells;
+	randomGrids;
 	started;
 	float;
 	hash;
@@ -35,18 +35,26 @@ class Store {
 		return remaining < 0 ? 0 : remaining;
 	}
 
+	get grid() {
+		return genGrid(this.players).join(':');
+	}
+
+	get sum() {
+		return sumBy(this.players, ({ count }) => count);
+	}
+
 	get currentGrid() {
-		const { statusTime, randomCells, remaining, cells, status } = this;
+		const { statusTime, randomGrids, remaining, grid, status } = this;
 
 		switch (status) {
 			case 2:
-				const id = Math.ceil((statusTime - remaining) / (statusTime / randomCells.length)) - 1;
+				const id = Math.ceil((statusTime - remaining) / (statusTime / randomGrids.length)) - 1;
 
-				return randomCells[id].split(':');
+				return randomGrids[id].split(':');
 			case 3:
-				return randomCells[randomCells.length - 1].split(':');
+				return randomGrids[randomGrids.length - 1].split(':');
 			default:
-				return cells ? cells.split(':') : [];
+				return grid ? grid.split(':') : [];
 		}
 	};
 
@@ -66,12 +74,11 @@ class Store {
 
 		clearInterval(this.timer);
 
-		const { actions, status, cells, players, started, id, float, hash, token, randomCells, winner, lastWinners } = data.domination;
+		const { actions, status, players, started, id, float, hash, token, randomGrids, winner, lastWinners } = data.domination;
 
 		this.actions = actions;
 		this.status = status;
-		this.cells = cells;
-		this.randomCells = randomCells;
+		this.randomGrids = randomGrids;
 		this.players = players;
 		this.started = started;
 		this.id = id;
@@ -81,6 +88,8 @@ class Store {
 		this.winner = winner;
 
 		this.lastWinners = lastWinners;
+
+		this.last = data.redis.lastWinners;
 
 		this.startRemaining();
 

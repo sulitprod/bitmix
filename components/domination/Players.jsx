@@ -16,10 +16,8 @@ const addingKeys = keyframes`
 		opacity: 1;
 	}
 `;
-const Line = styled.div.attrs(p => ({
-	style: {
-		height: `${percent(p.sum, p.count)}px`,
-	}}))`
+const Line = styled.div`
+	height: ${p => percent(p.potentialSum, p.count)}px;
 	background-color: ${p => p.bg};
 	width: 100%;
 	border-radius: 4px;
@@ -70,17 +68,17 @@ const BonusText = styled.div`
 	line-height: 24px;
 `;
 
-const Player = ({ photo_100, color, sum, count, addingBits, userBet }) => {
-	const bonus = sum === count + addingBits;
+const Player = ({ photo_100, color, potentialSum, count, addingBits, userBet }) => {
+	const bonus = potentialSum === (count + addingBits);
 
 	return (
 		<StyledPlayer>
 			<LineArea>
-				<Line {...{ sum, count, bg: color }} />
-				{ userBet ? 
-				<AddingLine {...{ bonus, sum, count: addingBits, bg: '' }}>
-					{ bonus ? <BonusText>+2% к выигрышу</BonusText> : '' }
-				</AddingLine> : '' }
+				<Line {...{ potentialSum, count, bg: color }} />
+				{ userBet && 
+				<AddingLine {...{ bonus, potentialSum, count: addingBits, bg: '' }}>
+					{ bonus && <BonusText>+2% к выигрышу</BonusText> }
+				</AddingLine> }
 			</LineArea>
 			{ photo_100 ? 
 				<Photo src={photo_100} /> : 
@@ -90,15 +88,11 @@ const Player = ({ photo_100, color, sum, count, addingBits, userBet }) => {
 	);
 };
 
-const arraySum = (players) => players.reduce((all, { count }) => all + count, 0);
-
 const Players = observer(() => {
-	const { players, addingBits } = useStore();
+	const { players, addingBits, sum } = useStore();
 	const user = useUser();
-	const sum = arraySum(players) + addingBits;
-	let inGame = false;
-
-	if (user) for (const player of players) if (player.id === user.id) inGame = true;
+	const potentialSum = sum + addingBits;
+	const inGame = user && players.some(({ id }) => id === user.id);
 
 	const withUserPlayers = addingBits && !inGame ? [ ...players, { id: user.id, count: 0 } ] : players;
 
@@ -109,7 +103,7 @@ const Players = observer(() => {
 				<Player {...{ 
 					...player, 
 					key,
-					sum, 
+					potentialSum, 
 					userBet: !user ? false : player.id === user.id, 
 					addingBits
 				}} />

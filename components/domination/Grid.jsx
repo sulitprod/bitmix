@@ -43,12 +43,12 @@ const Styled = styled.div`
 `;
 
 const Grid = observer(() => {
-	const { cells, players, status, winner, remaining, currentGrid, statusTime } = useStore();
+	const { grid, players, status, winner, remaining, currentGrid, statusTime } = useStore();
 	const { bodyBackground } = useContext(ThemeContext);
 	const canvas = useRef(null);
 	const rings = (status === 3) ? fillRingsStages() : null;
 	const [id, setId] = useState(status === 3 ? Math.ceil((statusTime - remaining) / (statusTime / rings.length)) - 1 : 0);
-	const [grid, setGrid] = useState(currentGrid);
+	const [dynamicGrid, setGrid] = useState(currentGrid);
 	const drawCell = (canvas, x, y, color) => {
 		canvas.fillStyle = color;
 		canvas.fillRect(9 * x, 9 * y, 8, 8);
@@ -62,9 +62,9 @@ const Grid = observer(() => {
 		draw.fillRect(0, 0, cols * 9 - 1, rows * 9 - 1);
 		for (let i = 0; i < cols; i++) {
 			for (let j = 0; j < rows; j++) {
-				const id = grid[i * rows + j];
+				const id = dynamicGrid[i * rows + j];
 
-				if (grid.length) {
+				if (dynamicGrid.length) {
 					drawCell(draw, i, j, players[Number(id)].color)
 				} else {
 					draw.fillStyle = 'transparent';
@@ -74,7 +74,7 @@ const Grid = observer(() => {
 		}
 	}
 	const addRing = () => {
-		const newGrid = grid.slice(0);
+		const newGrid = dynamicGrid.slice(0);
 
 		for (const i of rings[id]) newGrid[i] = winner.player;
 		setGrid(newGrid);
@@ -88,13 +88,13 @@ const Grid = observer(() => {
 		setGrid(currentGrid);
 		if (status === 3) addRing();
 		else setId(0);
-	}, [status, cells]);
+	}, [status, grid]);
 	useEffect(() => {
 		if (status === 2) setGrid(currentGrid);
 	}, [remaining]);
 	useEffect(() => {
 		if (status === 3) {
-			const newGrid = grid.slice(0);
+			const newGrid = dynamicGrid.slice(0);
 
 			for (const ring in rings) {
 				for (const i of rings[ring]) newGrid[i] = winner.player;
@@ -103,7 +103,7 @@ const Grid = observer(() => {
 			setGrid(newGrid);
 		}
 	}, [])
-	useEffect(fillGrid, [grid]);
+	useEffect(fillGrid, [dynamicGrid]);
 
 	return (
 		<Styled className={cn({ stageNo: !players.length })}>

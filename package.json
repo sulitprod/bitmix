@@ -17,10 +17,13 @@
 		"esm": "^3.2.25",
 		"express": "^4.17.1",
 		"firebase": "^7.24.0",
+		"handy-redis": "^2.2.2",
+		"lodash": "^4.17.21",
 		"md5": "^2.3.0",
 		"mobx": "^6.3.2",
 		"mobx-react-lite": "^3.2.0",
 		"moment": "^2.29.1",
+		"net": "^1.0.2",
 		"next": "^10.2.3",
 		"next-auth": "^3.23.0",
 		"nodemon": "^2.0.6",
@@ -32,9 +35,11 @@
 		"react-modal": "^3.13.1",
 		"react-toastify": "^6.0.8",
 		"react-tooltip": "^4.2.21",
+		"redis": "^3.1.2",
 		"socket.io": "^4.0.1",
 		"styled-components": "^5.2.3",
-		"underscore": "^1.12.1"
+		"tls": "0.0.1",
+		"util": "^0.12.4"
 	},
 	"devDependencies": {
 		"babel-plugin-styled-components": "^1.12.0",

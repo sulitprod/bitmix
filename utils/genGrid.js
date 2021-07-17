@@ -1,14 +1,11 @@
 import { CELLS } from '../constant';
+import { sumBy } from 'lodash';
 
 const generateGrid = (players) => {
 	const charsAll = [];
 
-	if (!players.length) {
-		for (let i = 0; i < CELLS.count; i++) {
-			charsAll.push(0);
-		}
-	} else {
-		const sum = players.reduce((all, { count }) => all + count, 0);
+	if (players.length) {
+		const sum = sumBy(players, ({ count }) => count);
 		const chars = players.map(({ count }) => (CELLS.count / 100) * (count / (sum / 100)));
 		const charsRounded = chars.map((i) => Math.floor(i) + 1);
 
@@ -22,7 +19,7 @@ const generateGrid = (players) => {
 			}
 		}
 	}
- 
+
 	return charsAll;
 }
 

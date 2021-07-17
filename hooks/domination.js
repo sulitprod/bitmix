@@ -2,22 +2,22 @@ import hash from 'md5';
 import rs from 'randomstring';
 import random from 'random';
 import 'firebase/firestore';
-import { genGrid, randomCells, rndColor, Times } from '../utils';
+import { randomGrids, rndColor, Times } from '../utils';
 import { firebaseDB } from '../utils/firebase';
 import { TIMES } from '../constant';
-import { clone } from 'underscore';
+import { clone, sumBy } from 'lodash';
 import { getSession } from 'next-auth/client';
 
 const currentDominationRaw = async () => {
-	let current = await firebaseDB.collection('domination').where('status', '!=', 3).get();
+	let current = await firebaseDB.collection('domination').where('status', '!=', 4).get();
 
 	if (current.empty) {
 		await addDomination(0);
-		current = await firebaseDB.collection('domination').where('status', '!=', 3).get();
+		current = await firebaseDB.collection('domination').where('status', '!=', 4).get();
 	}
 
 	return current;
-} 
+}
 
 const currentDomination = async () => {
 	const raw = await currentDominationRaw();
@@ -29,26 +29,26 @@ const currentDomination = async () => {
 }
 
 const addBits = async (count, req) => {
-	const currentUser = await getSession({ req });
+	const currentPlayer = await getSession({ req });
 	const { data, key } = await currentDomination();
 	let newData = clone(data);
 	let { players, status } = newData;
 
 	if (status !== 0 && status !== 1) return;
-	if (currentUser.balance < count) return;
+	if (currentPlayer.balance < count) return;
 
-	const sum = players.reduce((all, { count }) => all + count, 0);
+	const sum = sumBy(players, ({ count }) => count);
 	const packages = { 0: sum * 10 + 1, 1: (sum + count) * 10 };
 	let newPlayer = null;
 
 	for (const player of players) {
-		if (player.id === currentUser.id) {
+		if (player.id === currentPlayer.id) {
 			newPlayer = player;
 			break;
 		}
 	}
 	if (!newPlayer) {
-		const { id, photo_100, name } = currentUser;
+		const { id, photo_100, name } = currentPlayer;
 
 		newPlayer = {
 			id,
@@ -62,7 +62,6 @@ const addBits = async (count, req) => {
 	}
 	newPlayer.bits.push({ ...packages, 2: count });
 	newPlayer.count += count;
-	newData.cells = genGrid(players).join(':');
 	newData.actions.push({
 		id: newPlayer.id,
 		photo_100: newPlayer.photo_100, 
@@ -73,9 +72,7 @@ const addBits = async (count, req) => {
 	});
 
 	const bet = {
-		gameId: newData.id,
-		gameType: 'domination',
-		playerId: currentUser.id,
+		playerId: currentPlayer.id,
 		packages: [ sum * 10 + 1, (sum + count) * 10 ],
 		time: Times(1),
 		count
@@ -88,7 +85,7 @@ const addBits = async (count, req) => {
 }
 
 const setWinner = (float, players) => {
-	const sum = players.reduce((all, { count }) => all + count, 0);
+	const sum = sumBy(players, ({ count }) => count);
 	const bit = Math.ceil(float * sum * 10);
 	let player = null;
 
@@ -108,7 +105,7 @@ const setWinner = (float, players) => {
 
 const changeStatus = async (status) => {
 	const { data, key } = await currentDomination();
-	const { cells, float, players } = data;
+	const { float, players } = data;
 	const newValues = {
 		started: Times(1),
 		status
@@ -122,30 +119,41 @@ const changeStatus = async (status) => {
 			const winner = setWinner(float, players);
 
 			newValues.winner = winner;
-			newValues.randomCells = randomCells(cells, winner);
+			newValues.randomGrids = randomGrids(players, winner.player);
 			setTimeout(() => changeStatus(status + 1), TIMES.domination[status] * 1000);
 			break;
 		case 3:
-			setTimeout(() => { 
-				addReward();
-				createDomination();
+			await addReward(data.winner, players);
+			setTimeout(async () => {
+				await createDomination();
+				changeStatus(status + 1);
 			}, TIMES.domination[status] * 1000);
 			break;
 	}
-	await firebaseDB.collection('domination').doc(key).update({ ...data, ...newValues });
+	await firebaseDB.collection('domination').doc(key).update({ ...newValues });
 }
 
-const addReward = async () => {
-	console.log('hello');
+const addReward = async (winner, players) => {
+	const sum = sumBy(players, ({ count }) => count);
+	const getPlayer = await firebaseDB.collection('players').where('id', '==', players[winner.player].id).get();
+	let player = {};
+
+	getPlayer.forEach(doc => player = { data: doc.data(), key: doc.id });
+
+	await firebaseDB.collection('players').doc(player.key).update({ balance: player.data.balance + sum });
 }
 
 const lastWinners = async () => {
 	const games = [];
-	const raw = await firebaseDB.collection('domination').where('status', '==', 3).orderBy('id', 'desc').limit(5).get();
+	const raw = await firebaseDB.collection('domination').where('status', '==', 4).orderBy('id', 'desc').limit(5).get();
 
-	raw.forEach(doc => games.push({ data: doc.data(), key: doc.id }));
+	raw.forEach(doc => games.push(doc.data()));
 
-	return games;
+	return games.map((data) => {
+		return {
+			photo: data.players[data.winner.player].photo_100
+		}
+	});
 }
 
 const addDomination = async (id) => {
@@ -155,7 +163,6 @@ const addDomination = async (id) => {
 	await firebaseDB.collection('domination').add({
 		id,
 		actions: [],
-		cells: '',
 		players: [],
 		status: 0,
 		float,
