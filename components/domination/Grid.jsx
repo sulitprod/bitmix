@@ -42,7 +42,7 @@ const Styled = styled.div`
 	}
 `;
 
-const Grid = observer(() => {
+const Grid = () => {
 	const { grid, players, status, winner, remaining, currentGrid, statusTime } = useStore();
 	const { bodyBackground } = useContext(ThemeContext);
 	const canvas = useRef(null);
@@ -110,6 +110,6 @@ const Grid = observer(() => {
 			<canvas width={cols * 9 - 1} height={rows * 9 - 1} ref={canvas} />
 		</Styled>
 	);
-});
+}
 
-export default Grid;
+export default observer(Grid);

@@ -1,6 +1,7 @@
 import { runInAction, makeAutoObservable } from 'mobx';
 import { enableStaticRendering } from 'mobx-react-lite';
 import { sumBy } from 'lodash';
+import Pusher from 'pusher-js';
 
 import { TIMES } from '../constant';
 import { isClient, Times, genGrid } from '../utils';
@@ -22,6 +23,14 @@ class Store {
 	addingBits = 0;
 
 	constructor() {
+		let pusher = new Pusher('6118d30bbc02e4d11db3', {
+			cluster: 'eu'
+		});
+		let channel = pusher.subscribe('my-channel');
+	
+		channel.bind('my-event', function(data) {
+			console.log(JSON.stringify(data));
+		});
 		makeAutoObservable(this);
 	}
 
@@ -86,6 +95,7 @@ class Store {
 		this.hash = hash;
 		this.token = token;
 		this.winner = winner;
+		this.leaders = data.topPlayers;
 
 		this.lastWinners = lastWinners;
 

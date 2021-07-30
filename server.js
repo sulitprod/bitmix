@@ -1,7 +1,6 @@
 import next from 'next';
 import express from 'express';
 import http from 'http';
-import socket from 'socket.io';
 import { DEFAULT_PORT } from './constant';
 import { isDev } from './utils';
 
@@ -9,7 +8,6 @@ const { PORT } = process.env;
 const port = Number(PORT) || DEFAULT_PORT;
 const exp = express();
 const server = http.createServer(exp);
-const io = socket(server);
 const app = next({ dev: isDev() });
 const nextHandler = app.getRequestHandler();
 
@@ -19,9 +17,6 @@ async function start() {
 
 		exp.all('*', (request, response) => {
 			nextHandler(request, response);
-		});
-		io.on('connection', socket => {
-			console.log('Socket connect');
 		});
 		server.listen(port, () => {
 			console.log(`listening on *:${port}`);

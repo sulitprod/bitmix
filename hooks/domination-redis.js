@@ -1,8 +1,7 @@
 import hash from 'md5';
 import rs from 'randomstring';
 import random from 'random';
-import { getSession } from 'next-auth/client';
-import { groupBy, sumBy, shuffle, find } from 'lodash';
+import { groupBy, sumBy, shuffle, find, isNumber, sum, sortBy } from 'lodash';
 
 import redis from '../redis';
 import { rndColor, Times } from '../utils';
@@ -11,12 +10,10 @@ import { CELLS, TIMES } from '../constant';
 const getCurrentGame = async () => {
 	if (!(await redis.exists('domination:games'))) await addGame(0);
 
-	const currentGame = JSON.parse(await redis.lindex('domination:games', -1));
-	const bets = (await redis.lrange(`domination:bets:${currentGame.id}`, 0, -1)).map(JSON.parse);
-	const players = (await redis.lrange(`domination:players:${currentGame.id}`, 0, -1)).map(JSON.parse);
+	const currentGame = await getGame(-1);
 	const lastWinners = await getLastWinners();
 
-	return { ...currentGame, bets, players, lastWinners }
+	return { ...currentGame, lastWinners }
 }
 
 const setGame = async (data) => {
@@ -26,17 +23,21 @@ const setGame = async (data) => {
 }
 
 const changeBalance = async (player, transaction) => {
-	const { playerId, balance } = player;
+	const { id, balance } = player;
+	const newBalance = balance + transaction;
+
+	if (newBalance < 0) {
+		console.error('Баланс не может быть отрицательным');
+		return;
+	}
 
 	await addTransaction(player, transaction);
-	await redis.lset('players', playerId, JSON.stringify({ ...player, balance: balance + transaction }));
+	await redis.lset('players', id, JSON.stringify({ ...player, balance: newBalance }));
 }
 
-const addCount = async (count, req) => {
-	const currentPlayer = await getSession({ req });
+const addCount = async (count, currentPlayerSession) => {
 	// Костыль, надо чтоб id был как у игрока в базе редис, а не как id от соц сети
-	currentPlayer.id = (await redis.lsearch('players', { authId: currentPlayer.id })).id;
-
+	const currentPlayer = await getPlayer({ authId: currentPlayerSession.id });
 	const { id, bets, status, players } = await getCurrentGame();
 	const sum = sumBy(bets, ({ count }) => count);
 	const bet = {
@@ -45,7 +46,7 @@ const addCount = async (count, req) => {
 		created: Times(1),
 		count
 	};
-
+	changeBalance(currentPlayer, -count);
 	if (!bets.some(({ playerId }) => playerId === currentPlayer.id)) 
 		await redis.rpush(`domination:players:${id}`, JSON.stringify({
 			playerId: currentPlayer.id,
@@ -89,7 +90,7 @@ const setStage = async (stage) => {
 			break;
 		}
 		case 3: {
-			const { winner, bets, id, players } = currentGame;
+			const { winner, bets, players } = currentGame;
 			const { playerId } = winner.bet;
 			const sum = sumBy(bets, ({ count }) => count);
 			const player = find(players, { playerId });
@@ -152,8 +153,15 @@ const getWinner = (float, bets) => {
 	}
 }
 
-const getPlayer = async (id) => {
-	return JSON.parse(await redis.lindex('players', id));
+const getPlayer = async (searchParameters) => {
+	if (isNumber(searchParameters)) searchParameters = { id: searchParameters };
+	if (searchParameters.id) {
+		const { id } = searchParameters;
+		const player = JSON.parse(await redis.lindex('players', id));
+
+		if (player.id === id) return player;
+	}
+	return await redis.lsearch('players', searchParameters);
 }
 
 const setReward = async ({ playerId, comission }, count) => {
@@ -185,8 +193,6 @@ const getLastWinners = async () => {
 			return JSON.parse(players[playerId]);
 		});
 
-
-	
 	return lastWinners;
 }
 
@@ -217,6 +223,34 @@ const getGrid = (bets) => {
 	return grid.join(':');
 }
 
+const getTopPlayers = async (getGamesCount = 100) => {
+	const gamesCount = await redis.llen('domination:games');
+	const players = await redis.lrange('players', 0, -1);
+	const games = [];
+	const topPlayers = [];
+
+	if (gamesCount < getGamesCount) getGamesCount = gamesCount;
+	for (let g = 1; g <= getGamesCount; g++) {
+		games.push(await getGame(-g));
+	}
+	Object.entries(groupBy(games, ({ winner }) => winner.bet.playerId)).map(([ id, games ]) => {
+		topPlayers.push({
+			player: JSON.parse(players[Number(id)]),
+			count: sum(games.map(({ bets }) => sumBy(bets, ({ count }) => count)))
+		});
+	});
+
+	return sortBy(topPlayers, ({ count }) => -count);
+}
+
+const getGame = async (id) => {
+	const game = JSON.parse(await redis.lindex('domination:games', id));
+	const bets = (await redis.lrange(`domination:bets:${game.id}`, 0, -1)).map(JSON.parse);
+	const players = (await redis.lrange(`domination:players:${game.id}`, 0, -1)).map(JSON.parse);
+
+	return { ...game, bets, players };
+}
+
 const getRandomGrids = (grid, playerId) => {
 	const grids = [];
 	const gridCenter = (CELLS.count - 1) / 2;
@@ -241,5 +275,6 @@ export {
 	getCurrentGame,
 	addPlayer,
 	addGame,
-	setStage
+	setStage,
+	getTopPlayers
 }

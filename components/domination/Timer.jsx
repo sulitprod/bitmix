@@ -58,7 +58,7 @@ const Lines = ({ count, defaultCount, className }) => {
 	);
 }
 
-const Timer = observer(() => {
+const Timer = () => {
 	const { status, statusTime, remaining } = useStore();
 	const active = status !== 0;
 	const defaultCount = 30;
@@ -82,6 +82,6 @@ const Timer = observer(() => {
 			<Lines {...{ count, defaultCount, className: 'right'}} />
 		</StyledTimer>
 	);
-});
+}
 
-export default Timer;
+export default observer(Timer);

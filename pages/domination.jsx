@@ -8,7 +8,7 @@ import { declText } from '../utils';
 import { Icon } from '../components/default';
 import { useStore } from '../providers/Store';
 
-const Domination = observer(({ title }) => {
+const Domination = ({ title }) => {
 	const domination = useStore();
 	const { id, players } = domination;
 
@@ -35,7 +35,7 @@ const Domination = observer(({ title }) => {
 			</Warning> }
 		</Main>
 	);
-});
+}
 
 const getStaticProps = async () => {
 	const props = {
@@ -45,5 +45,5 @@ const getStaticProps = async () => {
 	return { props }
 }
 
-export default Domination;
+export default observer(Domination);
 export { getStaticProps };

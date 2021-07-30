@@ -1,25 +1,34 @@
+import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 
 import Bits from '../components/Bits';
-import { Photo } from '../components/default';
-import { Info, Content, Main } from '../components/Styled';
+import { Button, Photo } from '../components/default';
+import { Info, Content, Main, SubBlock } from '../components/Styled';
+import { getTopPlayers } from '../hooks/domination-redis';
+import { useStore } from '../providers/Store';
 
 const StyledLeaders = styled.div`
 	width: 100%;
 	display: table;
+	counter-reset: place;
 	color: ${({theme}) => theme.white};
 `;
 const FlexRow = styled.div`
 	display: table-row;
 	align-items: center;
 	> div {
-		padding: ${({theme}) => theme.pg8};
 		display: table-cell;
 		vertical-align: middle;
 
 		&.player {
 			width: 100%;
 		}
+	}
+`;
+const Header = styled(FlexRow)`
+	> div {
+		padding: ${({theme}) => theme.pg8};
+		color: ${({theme}) => theme.lightGray};
 	}
 `;
 const StyledLeader = styled(FlexRow)`
@@ -30,6 +39,10 @@ const StyledLeader = styled(FlexRow)`
 		> p {
 			margin-left: ${({theme}) => theme.pg8};
 		}
+	}
+	> .place:before {
+		counter-increment: place;
+		content: counter(place);
 	}
 	> .place, .count {
 		text-align: center;
@@ -45,56 +58,51 @@ const StyledLeader = styled(FlexRow)`
 	}
 `;
 
-const Leader = ({ photo_100, name, count, id }) => (
+const Leader = ({ photo, name, count, id }) => (
 	<StyledLeader>
-		<div className='place'>{id + 1}</div>
+		<div className='place'></div>
 		<div className='player'>
-			<Photo src={photo_100} />
-			<p>{name}</p>
+			<Button {...{ left: <Photo src={photo} />, align: 'left', href: `/user/${id}` }}>{name}</Button>
 		</div>
 		<Bits value={count} className='count' />
 	</StyledLeader>
 );
-const Leaders = ({ info }) => (
-	<Main>
-		<Info>
-			<div className='title'>Список лидеров</div>
-		</Info>
-		<Content>
-			<StyledLeaders>
-				<FlexRow>
-					<div>Место</div>
-					<div className='player'>Игрок</div>
-					<div>Выигрыш</div>
-				</FlexRow>
-				{info.map((props, key) => <Leader {...props} key={key} id={key} />)}
-			</StyledLeaders>
-		</Content>
-	</Main>
-);
+const Leaders = ({ leaders }) => {
+	return (
+		<Main>
+			<Info>
+				<div className='title'>Список лидеров</div>
+			</Info>
+			<Content>
+				<SubBlock>
+					<div className='header'>
+						<div className='title'>Наибольший выигрыш</div>
+					</div>
+					<div className='content'>
+						<StyledLeaders>
+							<Header>
+								<div>Место</div>
+								<div className='player'>Игрок</div>
+								<div>Выигрыш</div>
+							</Header>
+							{leaders.map(({ player: { photo, name, id }, count }) => 
+								<Leader {...{ photo, name, id, count, key: id }} />
+							)}
+						</StyledLeaders>
+					</div>
+				</SubBlock>
+			</Content>
+		</Main>
+	)
+};
 
-export default Leaders;
-
-export async function getServerSideProps() {
+const getStaticProps = async () => {
 	const props = {
-		info: [
-			{
-				photo_100: 'img/favicon.png',
-				name: 'Алена',
-				count: 15032
-			},
-			{
-				photo_100: 'img/favicon.png',
-				name: 'Павел',
-				count: 8062
-			},
-			{
-				photo_100: 'img/favicon.png',
-				name: 'Супер-убийца',
-				count: 3044
-			}
-		]
+		leaders: await getTopPlayers()
 	}
 
 	return { props }
 }
+
+export default observer(Leaders);
+export { getStaticProps };

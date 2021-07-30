@@ -11,7 +11,7 @@ const Name = styled.p`
 const Profile = ({ user: { photo_100, name, balance }, href }) => {
 	return (
 		<div>
-			<Button {...{ right: <Photo src={photo_100} />, align:'right', href }}>
+			<Button {...{ right: <Photo src={photo_100} />, align: 'right', href }}>
 				<Name>{name}</Name>
 				<Bits value={balance} />
 			</Button>

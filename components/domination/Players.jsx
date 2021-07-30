@@ -88,7 +88,7 @@ const Player = ({ photo_100, color, potentialSum, count, addingBits, userBet }) 
 	);
 };
 
-const Players = observer(() => {
+const Players = () => {
 	const { players, addingBits, sum } = useStore();
 	const user = useUser();
 	const potentialSum = sum + addingBits;
@@ -115,6 +115,6 @@ const Players = observer(() => {
 			}
 		</StyledPlayers>
 	);
-});
+}
 
-export default Players;
+export default observer(Players);

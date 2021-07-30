@@ -226,7 +226,7 @@ const WinnerStage = ({ status, randomGrids, players, remaining, statusTime, sum 
 		</StyledDefenition>
 	);
 }
-const Panel = observer(() => {
+const Panel = () => {
 	const { status, setAddingBits, players, randomGrids, remaining, statusTime, sum } = useStore();
 	const user = useUser();
 
@@ -234,6 +234,6 @@ const Panel = observer(() => {
 		status === 0 || status === 1 ? <AwaitStage {...{ user, setAddingBits }} /> :
 		status === 2 || status === 3 ? <WinnerStage {...{ status, randomGrids, players, remaining, statusTime, sum }} /> : ''
 	)
-});
+}
 
-export default Panel;
+export default observer(Panel);

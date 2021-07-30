@@ -12,6 +12,7 @@ import { rndColor } from '../utils';
 import { StoreProvider } from '../providers/Store';
 import { currentDomination, lastWinners } from '../hooks/domination';
 import { firebaseDB } from '../utils/firebase';
+import { getCurrentGame, getTopPlayers } from '../hooks/domination-redis';
 
 import '../public/default.css';
 
@@ -62,7 +63,7 @@ const lightTheme = {
 }
 
 const App = ({ Component, err, pageProps, router }) => {
-	const { title, description, color, session, domination, lastWin, redis } = pageProps;
+	const { title, description, color, session, domination, lastWin, redis, topPlayers } = pageProps;
 	const [ currentDomination, setCurrent ] = useState({ ...domination.data, lastWinners: lastWin });
 	const [ getDomination, loading, error ] = useCollectionData(
 		firebaseDB.collection('domination').where('status', '!=', 4),
@@ -76,7 +77,8 @@ const App = ({ Component, err, pageProps, router }) => {
 	const initialState = {
 		domination: currentDomination,
 		session,
-		redis
+		redis,
+		topPlayers
 	};
 	initialState.domination.lastWinners = lastWin;
 
@@ -95,15 +97,14 @@ const App = ({ Component, err, pageProps, router }) => {
 }
 
 App.getInitialProps = async (ctx) => {
-	const { getCurrentGame } = (await import('../hooks/domination-redis'));
-
 	return {
-		pageProps: { 
+		pageProps: {
 			color: rndColor(), 
 			session: await getSession(ctx),
 			redis: await getCurrentGame(),
 			domination: await currentDomination(),
-			lastWin: await lastWinners()
+			lastWin: await lastWinners(),
+			topPlayers: await getTopPlayers()
 		}
 	}
 }

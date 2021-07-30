@@ -107,7 +107,7 @@ const GroupedActions = ({ photo_100, count, name, packagesList, color }) => (
 	</StyledGroupedAction>
 );
 
-const Actions = observer(() => {
+const Actions = () => {
 	const { actions } = useStore();
 	const [ sortView, changeSortView ] = useState(true);
 	const sortedActions = actions.slice(0).reverse();
@@ -151,6 +151,6 @@ const Actions = observer(() => {
 			</div>
 		</SubBlock>
 	);
-});
+}
 
-export default Actions;
+export default observer(Actions);
